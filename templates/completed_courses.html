@@ -1,0 +1,69 @@
+{% extends 'student_base.html' %}
+
+{% block title %}Completed Courses - MIIT Academia{% endblock %}
+{% load static %}
+{% block student_content %}
+
+<div id="main" class="transition-all duration-500 p-4 ml-0 mt-36 container">
+    <h2 class="text-2xl font-semibold mb-4 text-center">Dear {{ student_name }}, Your Completed Courses</h2>
+    {% if semester_courses %}
+        <div class="accordion" id="accordion">
+            {% for semester_number, courses in semester_courses.items %}
+                <div class="accordion-item cardcolor1 border border-gray-200 rounded-t-lg mb-4 mx-5">
+                    <button type="button" class="py-3 px-4 inline-flex items-center justify-between text-black text-2xl py-4 px-5 rounded-t-lg shadow-md w-full cardcolor2" id="collapse-button-{{ semester_number }}">
+                        <span class="flex-1 text-left">Semester {{ semester_number }}</span>
+                        <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m6 9 6 6 6-6"></path>
+                        </svg>
+                    </button>                    
+                    <div id="collapse-content-{{ semester_number }}" class="hidden overflow-hidden transition-height duration-300">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-4">
+                            {% for course in courses %}
+                                <div class="bg-white shadow-md hover:shadow-lg transition duration-300 ease-in-out border border-gray-400 rounded-md">
+                                    <img src="{% static 'images/courses/sample_course.png' %}" alt="course image" class="w-full h-36">
+                                    <h3 class="text-xl font-semibold p-4 flex items-center mb-4">
+                                        <i class="fa-solid fa-graduation-cap text-4xl text-white bg-gray-300 rounded-full py-4 px-3 mr-4"></i>
+                                        <span class="text-lg">
+                                            <p>{{ course.CourseNumber }} - {{ course.CourseName }}</p>
+                                            <p>Course Credit - {{ course.CourseCredits }}</p>
+                                            <p>Grade - {{ course.Grade }}</p>
+                                        </span>
+                                    </h3>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-center">No grade information available.</p>
+    {% endif %}
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const buttons = document.querySelectorAll('[id^="collapse-button-"]');
+        buttons.forEach(button => {
+            const semesterNumber = button.id.split('-').pop();
+            const collapseContent = document.getElementById(`collapse-content-${semesterNumber}`);
+            button.addEventListener('click', function () {
+                if (collapseContent.classList.contains('hidden')) {
+                    collapseContent.classList.remove('hidden');
+                    collapseContent.style.height = collapseContent.scrollHeight + 'px';
+                } else {
+                    collapseContent.style.height = '0';
+                    setTimeout(() => {
+                        collapseContent.classList.add('hidden');
+                    }, 300);
+                }
+                // Toggle the icon rotation
+                button.querySelector('svg').classList.toggle('rotate-180');
+            });
+        });
+    });
+</script>
+{% endblock %}
+
+
+
+

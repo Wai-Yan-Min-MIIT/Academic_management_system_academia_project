@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Message Sent - MIIT Academia{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8">Message Sent</h1>
+
+    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+        <strong class="font-bold">Success!</strong>
+        <span class="block sm:inline">{{ message }}</span>
+    </div>
+
+    <div class="mb-4">
+        <p class="text-gray-700">Your message has been sent to the following recipients:</p>
+        <ul class="list-disc pl-5">
+            {% if recipient_count.students %}
+            <li>Students: {{ recipient_count.students }}</li>
+            {% endif %}
+            {% if recipient_count.faculty_staff %}
+            <li>Faculty/Staff: {{ recipient_count.faculty_staff }}</li>
+            {% endif %}
+            {% if recipient_count.all %}
+            <li>All: {{ recipient_count.all }}</li>
+            {% endif %}
+        </ul>
+    </div>
+
+    <a href="{% url 'broadcast_message' %}" class="custombg text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+        Broadcast Another Message
+    </a>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'student_base.html' %}
+
+{% block title %}Check Grades - MIIT Academia{% endblock %}
+
+{% block student_content %}
+<div id="main" class="transition-all duration-500 p-4 ml-0 mt-36 container">
+    <div class="cardcolor3 p-4 w-5/6">
+        <h3 class="text-2xl mb-3">Welcome, {{UserSalutation}} {{ student_name }}</h3>
+        <h6 class="text-md">Please choose the semester for which you want to view the grades.<br>
+        The menu below will help in posting the pertinent query.</h6>
+    </div>
+    <form action="{% url 'get_grades'%}" method="POST" class="cardcolor w-3/5 mx-auto border border-gray-300 my-6 flex flex-col items-center">
+        {% csrf_token %}
+        <div class="my-4 w-5/6 mx-auto relative">
+            <select id="selected_semester" name="selected_semester" class="cardcolor border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500 w-full h-14" required>
+                <option selected value="">Select a semester</option>
+                {% for semester in semesters %}
+                    <option value="{{ semester }}">{{ semester }}</option>
+                {% endfor %}
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 -top-10 left-0 flex items-center px-2 text-gray-700">
+                <label for="selected_semester" class="block text-sm text-gray-400">Which semester do you want to view the grades for?</label>
+            </div>
+        </div>
+        <div class="mb-4">
+            <button type="submit" class="custombg text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Select</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

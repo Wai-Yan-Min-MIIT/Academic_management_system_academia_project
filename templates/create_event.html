@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Create New Event - MIIT Academia{% endblock %}
+<style>
+    .reducewidth {
+        width: calc(100% - 250px);
+    }
+</style>
+
+{% block content %}
+<div id="main" class="transition-all duration-500 p-4 ml-0 mt-36 container">
+    <h1 class="text-3xl text-center font-bold mb-8">Create New Event</h1>
+    <form method="post" action="{% url 'create_event' %}" enctype="multipart/form-data" class="mb-8">
+        {% csrf_token %}
+        
+        <!-- Cover Photo Upload -->
+        <div class="mb-4 text-center">
+            <img id="cover-photo-preview" src="{% static 'images/default_event_cover.png' %}" alt="Cover Photo" class="border border-black w-48 h-48 mb-4 mx-auto" onerror="this.onerror=null; this.src='{% static 'images/default_event_cover.png' %}';">
+            <input type="file" id="cover-photo-input" name="cover_photo" class="hidden">
+            <button type="button" id="upload-cover-photo-button" class="border border-black hover:bg-gray-100 text-black mt-4 px-4 rounded focus:outline-none focus:shadow-outline">
+                Upload Cover Photo
+            </button>
+        </div>
+        
+        <!-- Event Title -->
+        <div class="mb-4 flex flex-col md:flex-row items-center">
+            <label for="event_title" class="text-gray-700 w-full md:w-1/4">Event Title:</label>
+            <input type="text" id="event_title" name="title" class="border border-gray-300 rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" required>
+        </div>
+
+        <!-- Event Description -->
+        <div class="mb-4 flex flex-col md:flex-row items-center">
+            <label for="event_description" class="text-gray-700 w-full md:w-1/4">Event Description:</label>
+            <textarea id="event_description" name="event_description" class="border border-gray-300 rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" rows="5" required></textarea>
+        </div>
+
+        <!-- Start Time -->
+        <div class="mb-4 flex flex-col md:flex-row items-center">
+            <label for="start_time" class="text-gray-700 w-full md:w-1/4">Start Time:</label>
+            <input type="datetime-local" id="start_time" name="start_time" class="border border-gray-300 rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" required>
+        </div>
+
+        <!-- End Time -->
+        <div class="mb-4 flex flex-col md:flex-row items-center">
+            <label for="end_time" class="text-gray-700 w-full md:w-1/4">End Time:</label>
+            <input type="datetime-local" id="end_time" name="end_time" class="border border-gray-300 rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" required>
+        </div>
+
+        <!-- Location -->
+        <div class="mb-4 flex flex-col md:flex-row items-center">
+            <label for="location" class="text-gray-700 w-full md:w-1/4">Location:</label>
+            <input type="text" id="location" name="location" class="border border-gray-300 rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" required>
+        </div>
+
+        <!-- Event Type -->
+        <div class="mb-4 flex flex-col md:flex-row items-center">
+            <label for="event_type" class="text-gray-700 w-full md:w-1/4">Event Type:</label>
+            <select id="event_type" name="event_type" class="border border-gray-300 rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" required>
+                <option value="Seminar">Seminar</option>
+                <option value="Workshop">Workshop</option>
+                <option value="Lecture">Lecture</option>
+                <option value="Social Event">Social Event</option>
+            </select>
+        </div>
+
+        <!-- Organizer Details -->
+        <div class="mb-4 flex flex-col md:flex-row items-center">
+            <label for="organizer_details" class="text-gray-700 w-full md:w-1/4">Organizer Details:</label>
+            <input type="text" id="organizer_details" name="organizer_details" class="border border-gray-300 rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" required>
+        </div>
+
+        <!-- Target Audience -->
+        <div class="mb-4 flex flex-col md:flex-row items-center">
+            <label for="target_audience" class="text-gray-700 w-full md:w-1/4">Target Audience:</label>
+            <input type="text" id="target_audience" name="target_audience" class="border border-gray-300 rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" required>
+        </div>
+
+        <!-- RSVP/Registration -->
+        <div class="mb-4 flex flex-col md:flex-row items-center">
+            <label for="rsvp" class="text-gray-700 w-full md:w-1/4">RSVP/Registration:</label>
+            <select id="rsvp" name="rsvp_registration" class="border border-gray-300 rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" required>
+                <option value="True">Yes</option>
+                <option value="False">No</option>
+            </select>
+        </div>
+
+        <!-- Capacity -->
+        <div class="mb-4 flex flex-col md:flex-row items-center">
+            <label for="capacity" class="text-gray-700 w-full md:w-1/4">Capacity:</label>
+            <input type="number" id="capacity" name="capacity" class="border border-gray-300 rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" required>
+        </div>
+
+        <!-- Attachments -->
+        <div class="mb-4 flex flex-col md:flex-row items-center">
+            <label for="attachments" class="text-gray-700 w-full md:w-1/4">Attachments:</label>
+            <input type="file" id="attachments" name="attachments" class="border border-gray-300 rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" multiple>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex justify-center">
+            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">Create Event</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.getElementById('upload-cover-photo-button').addEventListener('click', function() {
+        document.getElementById('cover-photo-input').click();
+    });
+
+    document.getElementById('cover-photo-input').addEventListener('change', function() {
+        const file = this.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('cover-photo-preview').src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="toggle flex border border-gray-300 py-2 fixed top-16 left-0 w-full cardcolor z-50">
+    <div class="ml-2 h-10 w-12 cardcolor3 cursor-pointer mt-3 flex items-center justify-center" onclick="openNav()" id="open">
+        <span class="text-xl">&#9776;</span>
+    </div>
+    <div class="ml-2 h-10 w-12 cardcolor3 cursor-pointer mt-3 flex items-center justify-center hidden" onclick="closeNav()" id="close">
+        <span class="text-xl">&#9776;</span>
+    </div>
+    <p class="text-xl ml-2 py-2 mt-3">MIIT Academia - Student Dashboard</p>
+</div>
+<div id="mySidenav" class="fixed top-32 left-0 h-full w-0 cardcolor2 overflow-x-hidden transition-all duration-500 z-10">
+    <div class="bg-white m-4">
+        <a href="{% url 'completed_courses' %}" class="block py-3 px-4 hover:bg-gray-100 border border-gray-200 {% if current_path == '/completed_courses' %}custom-highlight{% endif %}"><i class="fas fa-check-double mr-2"></i>Completed Courses</a>
+        <a href="#" class="block py-3 px-4 hover:bg-gray-100 border border-gray-200"><i class="fas fa-graduation-cap mr-2"></i>Current Courses</a>
+        <a href="{% url 'registration_offered_courses' %}" class="block py-3 px-4 hover:bg-gray-100 border border-gray-200 {% if current_path == '/offered-courses' %}custom-highlight{% endif %}"><i class="fas fa-user-edit mr-2"></i>Registration</a>
+        <a href="{% url 'projects' %}" class="block py-3 px-4 hover:bg-gray-100 border border-gray-200 {% if current_path == '/projects' %}custom-highlight{% endif %}"><i class="fas fa-project-diagram mr-2"></i>Projects</a>
+        <a href="{% url 'check_grades' %}" class="block py-3 px-4 hover:bg-gray-100 border border-gray-200 {% if current_path == '/check-grades' or current_path == '/get-grades' %}custom-highlight{% endif %}"><i class="fas fa-file-alt mr-2"></i>Check Grades</a>
+        <a href="{% url 'tech_news' %}" class="block py-3 px-4 hover:bg-gray-100 border border-gray-200 {% if current_path == '/tech_news' %}custom-highlight{% endif %}"><i class="fas fa-newspaper mr-2"></i>Check Events & News</a>
+        <a href="#" class="block py-3 px-4 hover:bg-gray-100 border border-gray-200"><i class="fas fa-book-open mr-2"></i>Library</a>
+    </div>
+</div>
+<style>
+    
+</style>
+{% block student_content %}
+    <!-- Student-specific content goes here -->
+{% endblock %}
+{% endblock %}

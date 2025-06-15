@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIIT Academia</title>
+    <link id="theme-stylesheet" rel="stylesheet" href="">
+    <link href="{% static 'css/tailwind_2.2.19.min.css' %}" rel="stylesheet">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <style>
+        main {
+            margin-top: 70px;
+            padding-bottom: 6rem;
+            min-height: calc(100vh - 150px);
+        }
+        footer {
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            padding: 1rem 0;
+        }        
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+    <main class="flex-grow flex items-center justify-center py-12">
+        <div class="max-w-md w-full bg-white border border-gray-300 shadow-md overflow-hidden p-6">
+            <h2 class="text-2xl font-semibold mb-4 text-center">Choose Your Role</h2>
+            <form action="{% url 'choose_role' %}" method="post">
+                {% csrf_token %}
+                <div class="space-y-4">
+                    {% for role in user_roles %}
+                        <label class="role-label block p-2" onclick="selectRole(this)">
+                            <input type="radio" name="selected_role" value="{{ role.RoleID }}" class="hidden">
+                            <span class="ml-4 text-base">{{ role.RoleDescription }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+                <div class="mt-6 flex justify-center">
+                    <button type="submit" class="custombg text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline">Select Role</button>
+                </div>
+            </form>
+        </div>
+    </main>
+    <footer class="w-full text-white text-base py-6 mt-auto">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex-shrink-0 mb-4 md:mb-0 mx-8">
+                <a href="{% url 'login' %}">
+                    <img src="{% static 'images/miit-logo.png' %}" alt="MIIT Logo" class="h-20">
+                </a>
+            </div>
+            <div class="flex-grow text-black text-center md:text-left">
+                <p>Myanmar Institute of Information Technology is a computer university located in Mandalay, Myanmar.<br> It was set up as a National Centre of Excellence in 2015.</p>
+                <p>This application was developed internally at MIIT. </p>
+            </div>
+            <div class="flex space-x-10 mx-10 mt-4 md:mt-0">
+                <a href="http://facebook.com/miit.edu.mdy.mm"><img src="{% static 'images/facebook_icon.png' %}" alt="Facebook" class="h-8"></a>
+                <a href="https://twitter.com/MIIT_Mandalay"><img src="{% static 'images/twitter_icon.png' %}" alt="Twitter" class="h-8"></a>
+                <a href="https://www.youtube.com/@miitmandalay9212"><img src="{% static 'images/youtube_icon.png' %}" alt="Youtube" class="h-8"></a>
+                <a href="https://www.linkedin.com/school/myanmar-institute-of-information-technology-miit-/mycompany/"><img src="{% static 'images/linkedin_icon.png' %}" alt="LinkedIn" class="h-8"></a>
+            </div>
+        </div>
+    </footer>
+    <script>
+        window.onload = function() {
+            const theme = getCookie('theme') || 'original_theme';
+            document.getElementById('theme-stylesheet').href = `/static/themes/${theme}.css`;
+        };
+
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        function selectRole(element) {
+            document.querySelectorAll('.role-label').forEach(label => {
+                label.classList.remove('selected');
+                label.querySelector('input').checked = false;
+            });
+            element.classList.add('selected');
+            element.querySelector('input').checked = true;
+        }
+    </script>
+</body>
+</html>

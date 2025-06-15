@@ -1,0 +1,131 @@
+<!-- academic_system_management.html -->
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block title %}Academic System Management - MIIT Academia{% endblock %}
+
+{% block content %}
+<div class="toggle flex border border-gray-300 py-2 fixed top-16 left-0 w-full cardcolor z-50">
+    <p class="text-md ml-4 py-2 mt-3"><a href=" {% url "admin_panel" %} " class="link"> MIIT Academia - Admin Panel</a> / <a href=" {% url "academic_system_management" %} " class="link">Academic System Management</a> /  BaseChart </p>
+</div>
+<div>
+    <div class="container px-8 py-8 mt-40 mb-8 mx-auto w-4/5 border border-gray-300 bg-gray-50 rounded-md shadow">
+        <h2 class="text-2xl text-center font-semibold mb-4">View Base Chart</h2>
+        <form action="#" method="POST">
+            {% csrf_token %}
+            <div class="grid md:grid-cols-1 lg:grid-cols-3 gap-4 lg:w-2/3 mx-auto">
+                <div class="mb-4">
+                    <label for="selected_batch" class="block text-gray-700">Select Batch:</label>
+                    <select id="selected_batch" name="selected_batch" class="border border-gray-300 rounded-md px-4 py-2">
+                        <option value="">Select Batch</option>                       
+                        {% for batch in batches %}
+                        <option value="{{ batch.BatchID }}" {% if selected_batch == batch.BatchID %}selected{% endif %}>{{ batch.BatchYear }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="selected_discipline" class="block text-gray-700">Select Discipline:</label>
+                    <select id="selected_discipline" name="selected_discipline" class="border border-gray-300 rounded-md px-4 py-2">
+                        <option value="">Select Discipline</option>
+                        {% for discipline in disciplines %}
+                        <option value="{{ discipline.DisciplineID }}" {% if selected_discipline == discipline.DisciplineID %}selected{% endif %}>{{ discipline.DisciplineShortName }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            
+            <div class="mb-4">
+                <button type="submit" class="custombg font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-5">View Base Chart</button>
+            </div>
+        </div>
+        </form>
+    </div>
+
+    {% if base_chart_data %}
+    
+        <div class="mx-10 flex flex-col bg-white border-2 border-gray-300 shadow-sm rounded-md dark:bg-neutral-900 dark:border-neutral-700 dark:shadow-neutral-700/70">
+            <nav class="flex bg-gray-200 pt-4" id="defaultTab" role="tablist">
+                <div class="ml-4"></div>
+                {% for year in base_chart_data.keys %}
+                <a data-tabs-target="#year-{{ year }}" role="tab" aria-controls="year-{{ year }}" aria-selected="{{ forloop.first }}"
+            class="text-lg {% if forloop.first %} text-blue-600 bg-white border border-blue-600 {% else %} bg-gray-200 {% endif %} -mb-px py-3 px-6 text-center border-b-transparent text-gray-500 rounded-t-md hover:text-gray-700 focus:z-10 cursor-pointer">
+            Year {{ number|index:year }}
+            </a>
+                {% endfor %}
+            </nav>
+            <div id="defaultTabContent">
+                {% for year, semesters in base_chart_data.items %}
+                <div class="px-8 py-4 bg-white rounded-lg dark:bg-gray-800 hidden" id="year-{{ year }}" role="tabpanel" aria-labelledby="year-{{ year }}-tab">
+                    <div class="grid md:grid-cols-2 gap-4">
+                        {% for semester, courses in semesters.items %}
+                        <div>
+                            <h3 class="font-bold text-lg mb-4 text-center">Semester {{ semester }}</h3>
+                            {% if courses %}
+                            <table class="table-auto w-full mb-8 border-collapse border border-gray-300" id="data-table">
+                                <thead class="cardcolor4">
+                                    <tr class="text-left">
+                                        <th class="px-4 py-2">Course Number</th>
+                                        <th class="px-4 py-2">Course Name</th>
+                                        <th class="px-4 py-2">Credits</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for course in courses %}
+                                    <tr class="{% cycle 'bg-gray-200' 'bg-white' %}">
+                                        <td class="border px-4 py-2">{{ course.CourseNumber }}</td>
+                                        <td class="border px-4 py-2">{{ course.CourseName }}</td>
+                                        <td class="border px-4 py-2">{{ course.CourseCredits }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <p>No courses to show</p>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+        </div>
+        
+    {% else %}
+    {% if selected_batch %}
+    <p class="font-bold text-center">No data availiable!</p>
+    {% endif %}
+    {% endif %}
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const tabs = document.querySelectorAll('[data-tabs-target]');
+    const tabContents = document.querySelectorAll('[role="tabpanel"]');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = document.querySelector(tab.dataset.tabsTarget);
+
+            tabContents.forEach(tc => {
+                tc.classList.add('hidden');
+            });
+
+            tabs.forEach(t => {
+                t.classList.remove('text-blue-600', 'bg-white', 'dark:bg-gray-700', 'dark:text-blue-500', 'border', 'border-blue-600');
+                t.classList.add('hover:text-gray-600', 'hover:bg-gray-100', 'dark:hover:bg-gray-700', 'dark:hover:text-gray-300', 'bg-gray-200');
+            });
+
+            target.classList.remove('hidden');
+            tab.classList.remove('hover:text-gray-600', 'hover:bg-gray-100', 'dark:hover:bg-gray-700', 'dark:hover:text-gray-300', 'bg-gray-200');
+            tab.classList.add('text-blue-600', 'bg-white', 'dark:bg-gray-700', 'dark:text-blue-500', 'border', 'border-blue-600');
+        });
+    });
+    const firstTab = document.querySelector('[data-tabs-target="#year-1"]');
+        if (firstTab) {
+            firstTab.click();
+        }
+});
+
+
+    
+</script>
+{% endblock %}

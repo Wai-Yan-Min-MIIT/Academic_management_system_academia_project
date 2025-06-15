@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIIT Academia</title>
+    <link href="{% static 'css/tailwind_2.2.19.min.css' %}" rel="stylesheet">
+    <link id="theme-stylesheet" rel="stylesheet" href="">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <style>
+        main {
+            padding-bottom: 6rem; /* Height of the footer */
+            min-height: calc(100vh - 100px); /* Adjust as needed */
+        }
+        footer {
+            background-color: #E5E8EC;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            padding: 1rem 0; /* Adjust as needed */
+        }
+    </style>
+    <script>
+        window.onload = function() {
+            const theme = getCookie('theme') || 'original_theme';
+            document.getElementById('theme-stylesheet').href = `/static/themes/${theme}.css`;
+        };
+
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+    </script>
+</head>
+
+<body class="bg-gray-100">
+    <main class="flex flex-col items-center justify-center py-8 px-4">
+        <div class="w-full max-w-xl rounded-md border-2 border-gray-200 bg-white">
+            <div class="px-6 h-40 py-4" style="background-color: #E5E8EC;">
+                <img src="{% static 'images/home_wordmark.png' %}" alt="home_wordmark" class="w-3/5 mx-auto" >
+            </div>
+            <div class="px-6 mb-4">
+                <form action="{% url 'login' %}" class="space-y-4 w-3/5 mx-auto" method="post">
+                    {% csrf_token %}
+                    <div class="relative flex items-center">
+                        <span class="inline-flex items-center px-3 border border-r-0 border-gray-400 bg-gray-200 h-10">
+                            <i class="fas fa-sign-in-alt fa-1x"></i>
+                        </span>
+                        <input class="w-full border border-gray-400 px-3 py-3 text-gray-900 focus:outline-none h-10" type="text" name="username" placeholder="Username" required>
+                    </div>
+
+                    <div class="relative flex items-center">
+                        <span class="inline-flex items-center px-3 border border-r-0 border-gray-400 bg-gray-200 h-10">
+                            <i class="fas fa-key fa-1x"></i>
+                        </span>
+                        <input class="w-full border border-gray-400 px-3 py-3 text-gray-900 focus:outline-none h-10" type="password" name="password" placeholder="Password" required>
+                    </div>
+
+                    <div class="flex justify-center">
+                        <button class="custombg rounded text-white font-bold py-2 px-2 w-1/4 focus:outline-none focus:shadow-outline" type="submit">
+                            Log In
+                        </button>
+                    </div>
+                    
+                    {% if messages %}
+                        <ul class="messages">
+                            {% for message in messages %}
+                                {% if 'incorrect' in message.tags %}
+                                    <li class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                                        <strong class="font-bold">Error!</strong>
+                                        <span class="block sm:inline">{{ message }}</span>
+                                        
+                                    </li>
+                                    <span class="text-blue-500 hover:underline flex justify-end"><a href="{% url 'forgot_password' %}">Forget Password?</a></span>
+                                
+                                {% elif 'no_roles' in message.tags %}
+                                    <li class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                                        <strong class="font-bold">Error!</strong>
+                                        <span class="block sm:inline">{{ message }}</span>
+                                    </li>
+                                
+                                {% elif 'session_expired' in message.tags %}
+                                    <li class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative mb-4">
+                                        <strong class="font-bold">Notice!</strong>
+                                        <span class="block sm:inline">{{ message }}</span>
+                                    </li>
+                                
+                                {% elif 'account_locked' in message.tags %}
+                                    <li class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-2 rounded relative my-4 mx-5">
+                                        <strong class="font-bold">Info:</strong>
+                                        <span class="block sm:inline">{{ message }}</span>
+                                    </li>
+                                
+                                {% elif 'no_account' in message.tags %}
+                                    <li class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative mb-4">
+                                        <strong class="font-bold">Notice!</strong>
+                                        <span class="block sm:inline">{{ message }}</span>
+                                    </li>
+                                {% elif 'logged_out' in message.tags %}
+                                    <li class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
+                                        <strong class="font-bold">Success!</strong>
+                                        <span class="block sm:inline">{{ message }}</span>
+                                    </li>
+
+                                 {% elif 'reset' in message.tags %}
+                                    <li class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
+                                        <strong class="font-bold">Success!</strong>
+                                        <span class="block sm:inline">{{ message }}</span>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </main>
+    
+
+    <footer class="text-white text-base py-6">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex-shrink-0 mb-4 md:mb-0 mx-8">
+                <a href="{% url 'home' %}">
+                    <img src="{% static 'images/miit-logo.png' %}" alt="MIIT Logo" class="h-20">
+                </a>
+            </div>
+            <div class="flex-grow text-black text-center md:text-left">
+                <p>Myanmar Institute of Information Technology is a computer university located in Mandalay, Myanmar.<br> It was set up as a National Centre of Excellence in 2015.</p>
+                <p>This application was developed internally at MIIT. </p>
+            </div>
+            <div class="flex space-x-10 mx-10 mt-4 md:mt-0">
+                <a href="http://facebook.com/miit.edu.mdy.mm"><img src="{% static 'images/facebook_icon.png' %}" alt="Facebook" class="h-8"></a>
+                <a href="https://twitter.com/MIIT_Mandalay"><img src="{% static 'images/twitter_icon.png' %}" alt="Twitter" class="h-8"></a>
+                <a href="https://www.youtube.com/@miitmandalay9212"><img src="{% static 'images/youtube_icon.png' %}" alt="Youtube" class="h-8"></a>
+                <a href="https://www.linkedin.com/school/myanmar-institute-of-information-technology-miit-/mycompany/"><img src="{% static 'images/linkedin_icon.png' %}" alt="LinkedIn" class="h-8"></a>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

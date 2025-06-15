@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="toggle flex border border-gray-300 py-2 fixed top-16 left-0 w-full cardcolor z-50">
+    <div class="ml-2 h-10 w-12 cardcolor3 cursor-pointer mt-3 flex items-center justify-center" onclick="openNav()" id="open">
+        <span class="text-xl">&#9776;</span>
+    </div>
+    <div class="ml-2 h-10 w-12 cardcolor3 cursor-pointer mt-3 flex items-center justify-center hidden" onclick="closeNav()" id="close">
+        <span class="text-xl">&#9776;</span>
+    </div>
+    <p class="text-xl ml-2 py-2 mt-3">MIIT Academia - Faculty Dashboard</p>
+</div>
+<div id="mySidenav" class="fixed top-32 left-0 h-full w-0 bg-gray-200 overflow-x-hidden transition-all duration-500 z-10 ">
+    <div class="bg-white m-4">
+        <a href="{% url "faculty_courses" %}" class="block py-3 px-4 hover:bg-gray-400 border border-gray-200 {% if current_path == '/faculty-dashboard/courses' %}custom-highlight{% endif %}"><i class="fas fa-book mr-2"></i>Courses</a>
+        <a href="{% url "faculty_projects" %}" class="block py-3 px-4 hover:bg-gray-400 border border-gray-200 {% if '/faculty-dashboard/projects' in current_path %}custom-highlight{% endif %}"><i class="fas fa-project-diagram mr-2"></i>Projects</a>
+        <a href="#" class="block py-3 px-4 hover:bg-gray-400 border border-gray-200"><i class="fas fa-clipboard mr-2"></i>Grades</a>
+        <a href="{%url "attendance" %}" class="block py-3 px-4 hover:bg-gray-400 border border-gray-200 {% if '/attendance' in current_path %}custom-highlight{% endif %}"><i class="fas fa-calendar-check mr-2"></i>Attendance</a>
+        <a href="#" class="block py-3 px-4 hover:bg-gray-400 border border-gray-200"><i class="fas fa-bullhorn mr-2"></i>Announcements</a>
+    </div>
+</div>
+
+{% block faculty_content %}
+    <!-- faculty-specific content goes here -->
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Verify Backup Code</title>
+</head>
+<body>
+    <h1>Verify Backup Code</h1>
+    <form method="post" action="{% url 'verify_backup_code' %}">
+        {% csrf_token %}
+        <label for="code">Enter a backup code:</label>
+        <input type="text" name="code" required>
+        <button type="submit">Verify</button>
+    </form>
+</body>
+</html>

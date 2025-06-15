@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Table Data - {{ table_name }} - MIIT Academia{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-8 py-8 text-center">
+    <h1 class="text-3xl font-bold">Displaying the <span class="text-blue-600">{{ table_name|capfirst }}</span> Table</h1>
+</div>
+
+<div class="container mx-auto px-4 py-4">
+    <div class="overflow-x-auto">
+        <table id="data-table" class="table-auto border-collapse border border-gray-400">
+            <thead class="bg-gray-700 text-white">
+                <tr>
+                    {% for column_name in column_names %}
+                    <th style="background-color: #422d3d;" class="sticky top-0 border border-gray-400 px-4 py-2">{{ column_name }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in table_data %}
+                <tr>
+                    {% for value in row %}
+                    <td class="border border-gray-400 px-4 py-2">{{ value }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+$(document).ready(function() {
+    let table = new DataTable('#data-table' , {
+    "pagingType": "simple_numbers", 
+        "language": {
+            "paginate": {
+                "previous": "Previous",
+                "next": "Next",
+            },
+            "lengthMenu": "Show <select>" +
+                          "<option value='10'>10</option>" +
+                          "<option value='25'>25</option>" +
+                          "<option value='50'>50</option>" +
+                          "<option value='100'>100</option>" +
+                          "<option value='-1'>All</option>" +
+                          "</select> entries",
+        },
+    });
+});
+</script>
+<style>
+    
+    /* Custom styles for pagination */
+    #data-table_wrapper .dataTables_paginate .paginate_button {
+        padding: 0.5rem 1rem;
+        margin: 0 0.25rem;
+        cursor: pointer;
+        background-color: #ffffff;  /* Background color for all pagination buttons */
+        border: 1px solid #412f2f;
+        border-radius: 0.25rem;
+    }
+
+    /* Custom styles for previous and next buttons */
+    #data-table_wrapper .dataTables_paginate .paginate_button.previous,
+    #data-table_wrapper .dataTables_paginate .paginate_button.next {
+        color: white !important; /* Text color for previous and next buttons */
+        background-color: #4d2e2e;  /* Background color for previous and next buttons */
+    }
+
+</style>
+
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Faculty Management - MIIT Academia{% endblock %}
+
+{% block content %}
+{% load static %}
+{% load custom_filters %}
+<style>
+    .form-control {
+        width: 100%;
+        padding: 8px;
+        margin: 4px 0;
+        box-sizing: border-box;
+    }
+</style>
+<div class="toggle flex border border-gray-300 py-2 fixed top-16 left-0 w-full cardcolor z-50">
+    <p class="text-md ml-4 py-2 mt-3"><a href="{% url 'admin_panel' %}" class="link">MIIT Academia - Admin Panel</a> / <a href="{% url 'user_management' %}" class="link">User Managements</a> / Create Faculty Account</p>
+</div>
+<div class="container mx-auto px-4 py-8 mt-28">
+    <h2 class="text-2xl font-bold mb-4 text-center">Faculty Staff Management</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="cardcolor rounded-md border-2 border-gray-400">
+            <div class="p-6">
+                <h3 class="text-xl font-semibold mb-4">Create Faculty Account (One-by-One)</h3>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="faculty_name" class="block text-gray-700">Faculty Name:</label>
+                        {{ form.FacultyStaffName|add_class:"border rounded-md py-2 px-3 w-2/3" }}
+                    </div>
+                    <div class="mb-4">
+                        <label for="short_name" class="block text-gray-700">Short Name:</label>
+                        {{ form.ShortName|add_class:"border rounded-md py-2 px-3 w-2/3" }}
+                    </div>
+                    <div class="mb-4">
+                        <label for="salutation" class="block text-gray-700">Salutation:</label>
+                        {{ form.Salutation |add_class:"border rounded-md py-2 px-3 w-2/3"}}
+                    </div>
+                    <div class="mb-4">
+                        <label for="email" class="block text-gray-700">Email:</label>
+                        {{ form.email|add_class:"border rounded-md py-2 px-3 w-2/3" }}
+                    </div>
+                    <div class="mb-4">
+                        <label for="designation" class="block text-gray-700">Designation:</label>
+                        {{ form.Designation|add_class:"border rounded-md py-2 px-3 w-2/3"}}
+                    </div>
+                    <div class="mb-4">
+                        <label for="department" class="block text-gray-700">Department:</label>
+                        {{ form.Department|add_class:"border rounded-md py-2 px-3 w-2/3" }}
+                    </div>
+                    <div class="mb-4">
+                        <label for="nrc" class="block text-gray-700">NRC:</label>
+                        {{ form.NRC|add_class:"border rounded-md py-2 px-3 w-2/3"}}
+                    </div>
+                    <div class="mb-4">
+                        <label for="phone" class="block text-gray-700">Phone:</label>
+                        {{ form.Phone|add_class:"border rounded-md py-2 px-3 w-2/3"}}
+                    </div>
+                    <div class="mb-4">
+                        <label for="address" class="block text-gray-700">Address:</label>
+                        {{ form.Address |add_class:"border rounded-md py-2 px-3 h-36 w-2/3"}}
+                    </div>
+                    <div class="mb-4">
+                        <button type="submit" name="create_one_by_one" class="custombg text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="cardcolor rounded-md border-2 border-gray-400">
+            <div class="p-6">
+                <h3 class="text-xl font-semibold mb-6">Bulk Faculty Registration (From Excel)</h3>
+                <div class="mb-12">
+                    <p class="text-gray-900 mb-6">To bulk register faculty, please <span class="text-green-700 font-bold">download</span> the template Excel file below, <span class="text-green-700 font-bold">fill</span> in the required information, and <span class="text-green-700 font-bold">upload</span> the file:</p>
+                    <a href="{% static 'Bulk-User-Creation-Templates/Faculty_Data.xlsx' %}" download class="custombg text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Download Template</a>
+                </div>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div>
+                        <label for="{{ bulk_form.excel_file.id_for_label }}" class="text-lg">{{ bulk_form.excel_file.label }} <span class="text-blue-700">( {{ bulk_form.excel_file.help_text }} )</span></label>
+                    </div>
+                    <div class="-ml-2">
+                        {{ bulk_form.excel_file }}
+                    </div>
+                    <div class="my-4">
+                        <button type="submit" name="bulk_registration" class="custombg text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Upload</button>
+                    </div>
+                </form>                
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if messages %}
+<div class="container mx-auto mt-4">
+    <ul class="messages">
+        {% for message in messages %}
+            <li class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
+                <strong class="font-bold">{{ message.tags|title }}!</strong>
+                <span class="block sm:inline">{{ message }}</span>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+{% endblock %}

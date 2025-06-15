@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Academic Transcript</title>
+    <style>
+        @page { size: A4 landscape; margin: 1cm }
+        body { font-family: sans-serif; }
+        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid black; padding-bottom: 10px; }
+        .title { text-align: center; margin: 20px 0; font-size: 18px; font-weight: bold; }
+        .student-info { margin: 20px 0; }
+        .table { width: 38%; border-collapse: collapse; margin-bottom: 10px; font-size: 10px; }
+        .table th, .table td { border: 1px solid black; padding: 4px; text-align: center; }
+        .table th { background-color: #f2f2f2; }
+        .semester-header { font-weight: bold; text-align: center; margin-top: 10px; font-size: 12px; }
+        .footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid black; padding-top: 10px; margin-top: 20px; font-size: 10px; }
+        .grade-info { text-align: center; }
+        .grade-info table { width: auto; margin: 0 auto; border-collapse: collapse; font-size: 10px; }
+        .grade-info th, .grade-info td { border: 1px solid black; padding: 4px; }
+        .page-number { text-align: right; }
+        .table-container { display: flex; flex-wrap: wrap; justify-content: space-between; page-break-after: always; }
+        .table-box { width: 32%; margin: 1%; position: relative; }
+        .small-table { width: 45%; font-size: 10px; margin-top: 10px; display: inline-block; }
+        .small-table th, .small-table td { border: 1px solid black; padding: 4px; text-align: center; }
+    </style>
+</head>
+<body>
+    <header>
+        {% load static %}
+        <div><img src="{% static 'images/miit-logo.png' %}" alt="MIIT Logo" width="100"></div>
+        <div>Myanmar Institute of Information Technology Mandalay, Myanmar</div>
+    </header>
+    <div class="title">Academic Transcript</div>
+    <div class="student-info">
+        <div>Name: {{ student_name }}</div>
+        <div>Roll Number: {{ roll_number }}</div>
+    </div>
+    {% for ay_id, data in grouped_data.items %}
+        <div class="semester-header">{{ data.academic_year_label }}</div>
+        <div class="table-container">
+        {% for semester in data.semesters %}
+            <div class="table-box">
+                <div class="semester-header">Semester {{ semester.SemesterPeriodNumber }}</div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Course Code</th>
+                            <th>Course Name</th>
+                            <th>Credits</th>
+                            <th>Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for course in semester.course_info %}
+                            <tr>
+                                <td>{{ course.CourseCode }}</td>
+                                <td>{{ course.CourseName }}</td>
+                                <td>{{ course.CourseCredits }}</td>
+                                <td>{{ course.Grade }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <table class="small-table" style="float: left;">
+                    <tr>
+                        <th>Semester Credits</th>
+                        <td>{{ semester.grade_sheet.0 }}</td>
+                    </tr>
+                    <tr>
+                        <th>Accumulated Credits</th>
+                        <td>{{ semester.grade_sheet.1 }}</td>
+                    </tr>
+                </table>
+                <table class="small-table" style="float: right;">
+                    <tr>
+                        <th>SGPA</th>
+                        <td>{{ semester.grade_sheet.2 }}</td>
+                    </tr>
+                    <tr>
+                        <th>CGPA</th>
+                        <td>{{ semester.grade_sheet.3 }}</td>
+                    </tr>
+                </table>
+            </div>
+        {% endfor %}
+        </div>
+        {% if forloop.counter|divisibleby:2 %}
+        <div style="page-break-after: always;"></div>
+        {% endif %}
+    {% endfor %}
+    <div class="footer">
+        <div>Copyright MIIT</div>
+        <div class="grade-info">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Grade</th>
+                        {% for point in grade_points %}
+                            <td>{{ point.Grade }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <th>Grade Point Value</th>
+                        {% for point in grade_points %}
+                            <td>{{ point.GradePointValue }}</td>
+                        {% endfor %}
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div class="page-number">Page: {{ forloop.counter }}/{{ forloop.parentloop.total_pages }}</div>
+    </div>
+</body>
+</html>

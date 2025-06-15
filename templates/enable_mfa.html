@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enable MFA</title>
+    <link href="{% static "css/tailwind_2.2.19.min.css" %}" rel="stylesheet">
+    <style>
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #412F2F;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #412F2F;
+        }
+        .bg-custom {
+            background-color: #412F2F;
+        }
+        .bg-custom:hover {
+            background-color: #4b3a3a;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main {
+            flex: 1;
+        }
+        footer {
+            background-color: #E5E8EC;
+            padding: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1 class="text-center text-2xl font-bold p-4 mt-8">Multifactor Authentication</h1>
+        <div id='status_box' class="flex justify-between items-center border border-gray-200 mt-16 mb-4 p-2 w-56 mx-auto h-20 rounded-md shadow">
+            <p class="mr-2 text-md font-bold">Your MFA Status</p>
+            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                <input type="checkbox" name="toggle" id="toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" {% if mfa_status %} checked {% endif %}/>
+                <label for="toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+            </div>
+        </div>
+        <form method="POST" enctype="multipart/form-data" id="enable-form" class="hidden">
+            {% csrf_token %}
+            <div class="flex justify-center">
+                <button type="submit" id="on" name="on" class="bg-custom text-white font-bold py-2 px-4 rounded mb-4">Enable MFA</button>
+            </div>
+        </form>
+        <form method="POST" action="#" id="save-form" class="hidden">
+            {% csrf_token %}
+            <div class="flex justify-center">
+                <button type="submit" id="off" name="off" class="bg-custom text-white font-bold py-2 px-4 rounded mb-4">Save Settings</button>
+            </div>
+        </form>
+
+        {% if qr_code %}
+        <div class="w-2/3 my-8 border border-gray-600 shadow-md mx-auto p-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h4 class="text-center font-semibold">Scan this QR code with your Google or Microsoft Authenticator app:</h4>
+                    <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code" height="300px" width="300px" class="mx-auto"> 
+                </div>
+                <div class="w-3/4 mx-auto">
+                    <div class="bg-gray-50 rounded-md border border-gray-200 not-italic mb-2">
+                        <div class="flex justify-between p-3 bg-gray-200">
+                            <h1 class="font-semibold">Backup Codes ( Save screctly! )</h1>
+                            <button id="clipboard-button" data-copy-to-clipboard-target="backup-code" data-copy-to-clipboard-content-type="textContent" data-tooltip-target="tooltip-backup-code" class="text-gray-500 hover:bg-gray-100 rounded-lg">
+                                <span id="default-icon-backup-code" class="flex items-center gap-4">
+                                    <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
+                                        <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm-3 14H5a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2Zm0-4H5a1 1 0 0 1 0-2h8a1 1 0 1 1 0 2Zm0-5H5a1 1 0 0 1 0-2h2V2h4v2h2a1 1 0 1 1 0 2Z"/>
+                                    </svg>
+                                    <p>Copy</p>
+                                </span>
+                                <span id="success-icon-backup-code" class="hidden flex items-center gap-4">
+                                    <svg class="w-3.5 h-3.5 text-blue-700 dark:text-blue-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
+                                    </svg>
+                                    <p>Copied</p>
+                                </span>
+                            </button>
+                        </div>
+                        <div id="backup-code" class="space-y-2 text-gray-900 dark:text-white font-medium leading-loose p-2">
+                            {% for code in backup_codes %}
+                                <p>{{ code }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <p class="text-sm font-semibold text-red-500">NOTE : One code can be used only once!</p>
+                </div>
+            </div>
+            <div class="flex justify-center mt-4">
+                <a href="{% url 'verify_mfa' %}" class="bg-custom text-white font-bold py-2 px-4 rounded">Verify MFA</a>
+            </div>
+        </div>
+        {% endif %}
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    {% if 'success' in message.tags %}
+                        <li class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 mx-10 w-1/3 mx-auto">
+                            <strong class="font-bold">Success!</strong>
+                            <span class="block sm:inline">{{ message }}</span>
+                        </li>
+                    {% endif %}
+                    {% if 'error' in message.tags %}
+                        <li class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 mx-10 w-1/3 mx-auto">
+                            <strong class="font-bold">Error!</strong>
+                            <span class="block sm:inline">{{ message }}</span>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </main>
+
+    <footer class="text-white text-base py-6">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex-shrink-0 mb-4 md:mb-0 mx-8">
+                <a href="#">
+                    <img src="{% static 'images/miit-logo.png' %}" alt="MIIT Logo" class="h-20">
+                </a>
+            </div>
+            <div class="flex-grow text-black text-center md:text-left">
+                <p>Myanmar Institute of Information Technology is a computer university located in Mandalay, Myanmar.<br> It was set up as a National Centre of Excellence in 2015.</p>
+                <p>This application was developed internally at MIIT.</p>
+            </div>
+            <div class="flex space-x-10 mx-10 mt-4 md:mt-0">
+                <a href="http://facebook.com/miit.edu.mdy.mm"><img src="{% static 'images/facebook_icon.png' %}" alt="Facebook" class="h-8"></a>
+                <a href="https://twitter.com/MIIT_Mandalay"><img src="{% static 'images/twitter_icon.png' %}" alt="Twitter" class="h-8"></a>
+                <a href="https://www.youtube.com/@miitmandalay9212"><img src="{% static 'images/youtube_icon.png' %}" alt="Youtube" class="h-8"></a>
+                <a href="https://www.linkedin.com/school/myanmar-institute-of-information-technology-miit-/mycompany/"><img src="{% static 'images/linkedin_icon.png' %}" alt="LinkedIn" class="h-8"></a>
+            </div>
+        </div>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggle = document.getElementById('toggle');
+            const enableForm = document.getElementById('enable-form');
+            const saveForm = document.getElementById('save-form');
+
+            function toggleButtons() {
+                if (toggle.checked) {
+                    enableForm.classList.remove('hidden');
+                    saveForm.classList.add('hidden');
+                } else {
+                    enableForm.classList.add('hidden');
+                    saveForm.classList.remove('hidden');
+                }
+            }
+
+            // Hide both forms initially
+            enableForm.classList.add('hidden');
+            saveForm.classList.add('hidden');
+
+            toggle.addEventListener('change', toggleButtons);
+
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('submit', function() {
+                    enableForm.classList.add('hidden');
+                    saveForm.classList.add('hidden');
+                });
+            });
+
+            document.getElementById('clipboard-button').addEventListener('click', function() {
+                const targetId = this.getAttribute('data-copy-to-clipboard-target');
+                const targetElement = document.getElementById(targetId);
+                const contentType = this.getAttribute('data-copy-to-clipboard-content-type');
+                const content = targetElement[contentType].trim();
+
+                navigator.clipboard.writeText(content).then(() => {
+                    document.getElementById('default-icon-backup-code').classList.add('hidden');
+                    document.getElementById('success-icon-backup-code').classList.remove('hidden');
+
+                    setTimeout(() => {
+                        document.getElementById('default-icon-backup-code').classList.remove('hidden');
+                        document.getElementById('success-icon-backup-code').classList.add('hidden');
+                    }, 2000);
+                })
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Login History{% endblock %}
+{% block content %}
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-4 text-center">Login History</h1>
+        <table class="md:w-4/5 lg:w-2/3 mx-auto bg-white border">
+            <thead class="text-center cardcolor4">
+                <tr>
+                    <th class="py-2 border w-1/4">Login Time</th>
+                    <th class="py-2 border w-1/4">IP Address</th>
+                    <th class="py-2 border w-1/2">User Agent</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in history %}
+                <tr>
+                    <td class="border px-4 py-2">{{ entry.login_time }}</td>
+                    <td class="border px-4 py-2 ">{{ entry.ip_address }}</td>
+                    <td class="border px-4 py-2">{{ entry.user_agent }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+{% endblock %}

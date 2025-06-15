@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Broadcast Message - MIIT Academia{% endblock %}
+
+{% block content %}
+<div class="toggle flex border border-gray-300 py-2 fixed top-16 left-0 w-full cardcolor z-50">
+    <p class="text-md ml-4 py-2 mt-3"><a href="{% url 'admin_panel' %}" class="link">MIIT Academia - Admin Panel</a> / Broadcast Message</p>
+</div>
+<div class="container mx-auto px-8 py-8 mt-36 w-1/3 border border-gray-300 bg-gray-50 rounded-md shadow">
+    <h1 class="text-3xl font-bold mb-4 text-center">Broadcast Message</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="bg-{% if message.tags == 'success' %}green-100{% elif message.tags == 'error' %}red-100{% endif %} border {% if message.tags == 'success' %}border-green-400{% elif message.tags == 'error' %}border-red-400{% endif %} text-{% if message.tags == 'success' %}green-700{% elif message.tags == 'error' %}red-700{% endif %} px-4 py-3 rounded relative mb-4" role="alert">
+                <strong class="font-bold">{{ message.tags|capfirst }}!</strong>
+                <span class="block sm:inline">{{ message }}</span>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" action="{% url 'broadcast_message' %}">
+        {% csrf_token %}
+        <div class="mb-4">
+            <label for="subject" class="block text-gray-700 font-bold mb-2">Subject</label>
+            <input type="text" name="subject" id="subject" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+        </div>
+        <div class="mb-4">
+            <label for="message" class="block text-gray-700 font-bold mb-2">Message</label>
+            <textarea name="message" id="message" rows="5" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required></textarea>
+        </div>
+        <div class="mb-4">
+            <label for="recipients" class="block text-gray-700 font-bold mb-2">Recipients</label>
+            <div class="flex items-center mb-2">
+                <input type="checkbox" name="recipients" value="students" id="students" class="mr-2">
+                <label for="students">Students</label>
+            </div>
+            <div class="flex items-center mb-2">
+                <input type="checkbox" name="recipients" value="faculty_staff" id="faculty_staff" class="mr-2">
+                <label for="faculty_staff">Faculty/Staff</label>
+            </div>
+            <div class="flex items-center">
+                <input type="checkbox" name="recipients" value="all" id="all" class="mr-2">
+                <label for="all">All</label>
+            </div>
+        </div>
+        <div class="mb-4">
+            <button type="submit" class="custombg text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Send Message
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

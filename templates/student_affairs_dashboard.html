@@ -1,0 +1,73 @@
+{% extends 'student_affairs_base.html' %} 
+{% load static %}
+{% block title %}Student Affairs - MIIT Academia{% endblock %} 
+
+{% block student_affairs_content %}
+<div id="main" class="transition-all duration-500 p-4 ml-0 mt-36 container">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <a href="{% url "information_center" %}" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6">
+                <div class="flex justify-center mb-4 cardicon">
+                    <i class="fas fa-light fa-info-circle fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2 text-center">Information Center</h3>
+                <p>Click here to search the information of people of MIIT.</p>
+            </div>
+        </a>
+        <a href="{% url "edit_user_status" %}" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6">
+                <div class="flex justify-center mb-4 cardicon">
+                    <i class="fas fa-light fa-user-edit fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2 text-center">User Status</h3>
+                <p>Click here to edit user's status.</p>
+            </div>
+        </a>
+        <a href="#" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6">
+                <div class="flex justify-center mb-4 cardicon">
+                    <i class="fa-solid fa-address-card fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2 text-center">Registration</h3>
+                <p>Click here to view and edit the registration.</p>
+            </div>
+        </a>
+        <a href="{% url "manage_roles" %}" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6">
+                <div class="flex justify-center mb-4 cardicon">
+                    <i class="fas fa-light fa-calendar-alt fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2 text-center">Timetable</h3>
+                <p>Click here to create and view the timetable.</p>
+            </div>
+        </a>
+        <a href="#" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6">
+                <div class="flex justify-center mb-4 cardicon">
+                    <i class="fas fa-light fa-chalkboard-teacher fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2 text-center">Exam Hall Duty</h3>
+                <p>Click here to assign the faculty to the exam hall.</p>
+            </div>
+        </a>
+        <a href="{% url "create_batch" %}" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6">
+                <div class="flex justify-center mb-4 cardicon">
+                    <i class="fas fa-light fa-user-check fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2 text-center">Attendance Management</h3>
+                <p>Click here to view the attendance of students</p>
+            </div>
+        </a>
+        <a href="{% url "generate_transcript" %}" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6">
+                <div class="flex justify-center mb-4 cardicon">
+                    <i class="fas fa-light fa-file-alt fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2 text-center">Transcript</h3>
+                <p>Click here to get the transcript of students.</p>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock %}

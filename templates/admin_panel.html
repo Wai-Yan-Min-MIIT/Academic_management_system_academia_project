@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Admin Panel - MIIT Academia{% endblock %}
+
+{% block content %}
+<div class="toggle flex border border-gray-300 py-2 fixed top-16 left-0 w-full cardcolor z-50">
+    <p class="text-md ml-4 py-2 mt-3">MIIT Academia - Admin Panel</p>
+</div>
+<div class="container mx-auto px-8 py-8 mt-36"> 
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <a href="{% url 'academic_system_management' %}" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6">
+                <div class="flex justify-center mb-6 cardicon">
+                    <i class="fas fa-graduation-cap fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2 text-center">Academic System Management</h3>
+                <p class="text-gray-700">Click here to manage academic system.</p>
+            </div>
+        </a>
+        <a href="{% url 'user_management' %}" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6">
+                <div class="flex justify-center mb-6 cardicon">
+                    <i class="fas fa-light fa-users fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2 text-center">User Management</h3>
+                <p class="text-gray-700">Click here to manage users.</p>
+            </div>
+        </a>
+        <a href="{% url 'academic_statistics' %}" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6">
+                <div class="flex justify-center mb-6 cardicon">
+                    <i class="fas fa-light fa-chart-bar fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2 text-center">Academic Statistics</h3>
+                <p class="text-gray-700">Click here to view academic statistics.</p>
+            </div>
+        </a>
+        <a href="{% url 'broadcast_message' %}" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6">
+                <div class="flex justify-center mb-6 cardicon">
+                    <i class="fas fa-light fa-bullhorn fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2 text-center">Broadcast a Message</h3>
+                <p class="text-gray-700">Click here to broadcast a message.</p>
+            </div>
+        </a>
+        <a href="#" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6">
+                <div class="flex justify-center mb-6 cardicon">
+                    <i class="fas fa-light fa-calendar-check fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2 text-center">Manage Events</h3>
+                <p class="text-gray-700">Click here to manage events.</p>
+            </div>
+        </a>
+        <a href="{% url 'tech_news' %}" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6">
+                <div class="flex justify-center mb-6 cardicon">
+                    <i class="fas fa-light fa-newspaper fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2 text-center">Tech News</h3>
+                <p class="text-gray-700">Click here to view tech news.</p>
+            </div>
+        </a>
+        <a href="{% url 'check_database' %}" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6">
+                <div class="flex justify-center mb-6 cardicon">
+                    <i class="fas fa-light fa-database fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2 text-center">Check Database</h3>
+                <p class="text-gray-700">Click here to check the database.</p>
+            </div>
+        </a>
+    </div>
+    
+</div>
+{% endblock %}

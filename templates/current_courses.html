@@ -1,0 +1,20 @@
+{% extends 'faculty_base.html' %}
+{% load static %}
+{% block faculty_content %}
+<div id="main" class="transition-all duration-500 p-4 ml-0 mt-36 container">
+    <h1 class="text-3xl font-bold mb-8">Currently Teaching Courses</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+        {% for course in courses %}
+        <a href="{% url 'upload_attendance' course.CourseCode %}">
+            <div class="cardcolor shadow-md hover:shadow-lg transition duration-300 ease-in-out border border-gray-400">
+                <img src="{% static 'images/courses/sample_course.png' %}" alt="course image" class="w-full h-36">
+                <h3 class="text-xl font-semibold p-4 flex items-center mb-4">
+                    <i class="fa-solid fa-graduation-cap text-4xl text-white bg-gray-300 rounded-full py-4 px-3 mr-4"></i>
+                    <span class="text-lg">{{ course.CourseCode }} - {{ course.CourseName }}</span>
+                </h3>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

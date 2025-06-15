@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="toggle flex border bordercolor py-2 fixed top-16 left-0 w-full cardcolor z-50">
+    <div class="ml-2 h-10 w-12 cardcolor3 cursor-pointer mt-3 flex items-center justify-center" onclick="openNav()" id="open">
+        <span class="text-xl">&#9776;</span> 
+    </div>
+    <div class="ml-2 h-10 w-12 cardcolor3 cursor-pointer mt-3 flex items-center justify-center hidden" onclick="closeNav()" id="close">
+        <span class="text-xl">&#9776;</span>
+    </div>
+    <p class="text-xl ml-2 py-2 mt-3">MIIT Academia - Student Affairs Dashboard</p>
+</div>
+<div id="mySidenav" class="fixed top-32 left-0 h-full w-0 cardcolor2 overflow-x-hidden transition-all duration-500 z-10">
+    <div class="bg-white m-4">
+        <a href="{% url "information_center" %}" class="block py-3 px-4 hover:bg-gray-100 border border-gray-200 {% if '/information-center' in current_path %}custom-highlight{% endif %}"><i class="fas fa-info-circle mr-2"></i>Information Center</a>
+        <a href="{% url "edit_user_status" %}" class="block py-3 px-4 hover:bg-gray-100 border border-gray-200 {% if '/edit-user-status' in current_path %}custom-highlight{% endif %}"><i class="fas fa-user-edit mr-2"></i>User Status</a>
+        <a href="#" class="block py-3 px-4 hover:bg-gray-100 border border-gray-200"><i class="fas fa-address-card mr-2"></i>Registration</a>
+        <a href="#" class="block py-3 px-4 hover:bg-gray-100 border border-gray-200"><i class="fas fa-calendar-alt mr-2"></i>Time Table</a>
+        <a href="#" class="block py-3 px-4 hover:bg-gray-100 border border-gray-200"><i class="fas fa-calendar-check mr-2"></i>Exam Hall Duty</a>
+        <a href="#" class="block py-3 px-4 hover:bg-gray-100 border border-gray-200"><i class="fas fa-user-check mr-2"></i>Attendance Management</a>
+        <a href="{% url "generate_transcript" %}" class="block py-3 px-4 hover:bg-gray-100 border border-gray-200 {% if '/generate-transcript' in current_path %}custom-highlight{% endif %}"><i class="fas fa-file-alt mr-2"></i>Transcript</a>
+    </div>
+</div>
+
+    
+{% block student_affairs_content %}
+    <!-- Student-specific content goes here -->
+{% endblock %}
+{% endblock %}

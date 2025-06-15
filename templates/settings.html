@@ -1,0 +1,512 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .fade-in {
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+    }
+    .fade-in-visible {
+        opacity: 1;
+    }
+    html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 90px;
+    }
+    .step-indicator {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+    .line {
+        height: 2px;
+        width: 165px;
+        background-color: #000000; /* Tailwind gray-300 */
+        flex-grow: 1;
+    } 
+    .close-btn {
+        background-color: transparent;
+        color: gray;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        width: 30px;
+        border-radius: 20%;
+    }
+    .close-btn:hover {
+        background-color: #f0f0f0;
+    }
+
+   
+</style>
+<div class="px-4">
+    <!-- Sidebar -->
+    <div id="settingsSidenav" class="fixed top-28 left-4 border-t border-b border-gray-300 w-52">
+        <a href="#account-settings" class="block py-3 px-2 h-12"><i class="fas fa-user-cog mr-2"></i>Account Settings</a>
+        <a href="#security-settings" class="block py-3 px-2 h-12"><i class="fas fa-shield-alt mr-2"></i>Security Settings</a>
+        <a href="#notification-settings" class="block py-3 px-2 h-12"><i class="fas fa-bell mr-2"></i>Notification Settings</a>
+        <a href="#application-settings" class="block py-3 px-2 h-12"><i class="fas fa-cogs mr-2"></i>Application Settings</a>
+        <a href="#data-privacy" class="block py-3 px-2 h-12"><i class="fas fa-user-secret mr-2"></i>Data and Privacy</a>
+        <a href="#contact-feedback" class="block py-3 px-2 h-12"><i class="fas fa-envelope mr-2"></i>Contact and Feedback</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="ml-52 flex-1 p-8">
+        <div id="account-settings" class="p-6 cardcolor rounded-lg my-4 border-t border-gray-300 fade-in">
+            <fieldset class="cardcolor p-3 border bordercolor rounded-lg">
+                <legend class="text-2xl mb-4">Account Settings</legend>
+                <div class="mb-4">
+                    <ul>
+                        <li><a href="{% url 'change_password' %}">Change Password</a></li>
+                        <li><a href="{% url 'forgot_password' %}">Forgot Password</a></li>
+                    </ul>
+                </div>
+            </fieldset>
+        </div>
+        <div id="security-settings" class="p-6 cardcolor rounded-lg mb-4 fade-in">
+            <fieldset class="cardcolor p-3 border bordercolor rounded-lg">
+                <legend class="text-2xl mb-4">Security Settings</legend>
+                <div class="mb-4">
+                <fieldset class="mb-4">
+                    <legend class="font-semibold">Multi-factor Authentication</legend>
+                    <div class="my-2">
+                        <p class="mr-2 text-md">Your MFA Status : {{mfa_status}}</p>
+                    </div>
+                    <button id="enableMfaBtn" class="custombg text-white px-4 py-2 rounded {% if mfa_status == 'Enabled' %}hidden{% endif %}">
+                        Enable MFA
+                    </button>
+                    <button id="disableMfaBtn" class="bg-red-500 text-white px-4 py-2 rounded {% if mfa_status == 'Disabled' %}hidden{% endif %}">
+                        Disable MFA
+                    </button>
+                </fieldset>
+                <fieldset class="mb-4">
+                    <legend class="font-semibold">Session Management</legend>
+                    <ul>
+                        <li><a href="{% url 'session_management' %}">Manage Sessions</a></li>
+                    </ul>
+                </fieldset>
+                <fieldset class="mb-4">
+                    <legend class="font-semibold">Login History</legend>
+                    <ul>
+                        <li><a href="{% url "login_history" %}">View Login History</a></li>
+                    </ul>
+                </fieldset>
+
+                {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                            {% if 'invalid_otp' in message.tags %}
+                                <li class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                                    <strong class="font-bold">Error!</strong>
+                                    <span class="block sm:inline">{{ message }}</span>
+                                </li>
+                            
+                            {% elif 'mfa_success' in message.tags %}
+                                <li class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mt-2 mb-4">
+                                    <strong class="font-bold">Success!</strong>
+                                    <span class="block sm:inline">{{ message }}</span>
+                                </li>
+
+                            {% elif 'already_enabled' in message.tags %}
+                                <li class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-2 rounded relative my-4 mx-5">
+                                    <strong class="font-bold">Notice:</strong>
+                                    <span class="block sm:inline">{{ message }}</span>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                </div>
+            </fieldset>
+        </div>
+        <div id="notification-settings" class="p-6 cardcolor rounded-lg my-4 border-t border-gray-300 fade-in">
+            <fieldset class="cardcolor p-3 border bordercolor rounded-lg">
+                <legend class="text-2xl mb-4">Notification Settings</legend>
+                <div class="mb-4">
+                    <ul>
+                        <li><a href="{% url "notification_settings" %}">Alert Preferences</a></li>
+                    </ul>
+                </div>
+            </fieldset>
+        </div>
+        <div id="application-settings" class="p-6 cardcolor rounded-lg my-4 border-t border-gray-300 fade-in">
+            <fieldset class="cardcolor p-3 border bordercolor rounded-lg">
+                <legend class="text-2xl mb-4">Application Settings</legend>
+                <div class="mt-2">
+                <ul>
+                    <li><a href="#" class="text-xl font-semibold">Theme Preferences</a></li>
+                    <div class="mt-6">
+                        <select id="themeSelector" class="border border-gray-300 p-2 px-3">
+                            <option value="original_theme">Light Theme [Original]</option>
+                            <option value="admiral_blue">Dark Blue</option>
+                            <option value="jungle_green">Jungle Green</option>
+                            <option value="dark">Dark Green</option>
+                        </select>
+                        <button id="submitTheme" class="custombg text-white px-4 py-2 rounded ml-4">Apply Theme</button>
+                    </div>                    
+                </ul>
+                </div>
+            </fieldset>
+        </div>
+        <div id="data-privacy" class="p-6 cardcolor rounded-lg my-4 border-t border-gray-300 fade-in">
+            <fieldset class="cardcolor p-3 border bordercolor rounded-lg">
+                <legend class="text-2xl mb-4">Data and Privacy</legend>
+                <div class="mb-4">
+                    <ul>
+                        <li><a href="#">Data Export</a></li>
+                        <li><a href="#">Delete Account</a></li>
+                    </ul>
+                </div>
+            </fieldset>
+        </div>
+        <div id="contact-feedback" class="p-6 cardcolor rounded-lg my-4 border-t border-gray-300 fade-in">
+            <fieldset class="cardcolor p-3 border bordercolor rounded-lg">
+                <legend class="text-2xl mb-4">Contact and Feedback</legend>
+                <div class="mb-4">
+                    <ul>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Feedback</a></li>
+                    </ul>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+</div>
+
+<!-- Enable MFA Popover Modal -->
+<div id="enableMfaPopover" class="bg-white shadow-lg rounded-lg p-6 w-full max-w-2xl h-120 hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 overflow-y-auto">
+    <div class="w-full flex justify-end mb-2">
+        <button id="closeEnablePopoverBtn" class="close-btn"><i class="fas fa-times fa-lg"></i></button>
+    </div>
+    <div class="flex justify-between items-center mb-4 w-full px-4">
+        <div class="flex items-center">
+            <div id="step1" class="step-indicator flex items-center justify-center rounded-full border-2 border-gray-300 step-active">1</div>
+            <div class="line"></div>
+            <div id="step2" class="step-indicator flex items-center justify-center rounded-full border-2 border-gray-300">2</div>
+            <div class="line"></div>
+            <div id="step3" class="step-indicator flex items-center justify-center rounded-full border-2 border-gray-300">3</div>
+            <div class="line"></div>
+            <div id="step4" class="step-indicator flex items-center justify-center rounded-full border-2 border-gray-300">4</div>
+        </div>
+    </div>
+    <div id="content" class="flex flex-col justify-between">
+        <div>
+            <div id="stepContent1" class="mb-44">
+                <h2 class="text-2xl font-bold">Step 1</h2>
+                <p class="mb-4">Download an authenticator app for your device:</p>
+                <ul class="list-disc pl-5">
+                    <li class="mb-2">
+                        <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2" target="_blank" class="text-blue-600 underline hover:text-blue-800">Google Authenticator (Android)</a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="https://apps.apple.com/us/app/google-authenticator/id388497605" target="_blank" class="text-blue-600 underline hover:text-blue-800">Google Authenticator (iOS)</a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="https://play.google.com/store/apps/details?id=com.azure.authenticator" target="_blank" class="text-blue-600 underline hover:text-blue-800">Microsoft Authenticator (Android)</a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="https://apps.apple.com/us/app/microsoft-authenticator/id983156458" target="_blank" class="text-blue-600 underline hover:text-blue-800">Microsoft Authenticator (iOS)</a>
+                    </li>
+                </ul>
+            </div>
+    
+            <div id="stepContent2" class="hidden mb-4">
+                <h2 class="text-2xl font-bold">Step 2</h2>
+                <p class="mb-4">Scan the QR code with your authenticator app or use the secret token below:</p>
+                <img id="qrCode" src="" alt="QR Code" class="mx-auto mb-4" style="height: 200px; width: 200px;" />
+                <p class="mb-2">Can’t scan the code? No problem! You can use the following code instead:</p>
+                <span class="bg-gray-200 px-2 py-1 rounded inline-block">
+                    <code id="secretToken" class="text-blue-700"></code>
+                </span>
+            </div>
+    
+            <div id="stepContent3" class="hidden mb-64">
+                <h2 class="text-2xl font-bold">Step 3</h2>
+                <p class="mb-4">Enter the code generated by your authenticator app:</p>
+                <input type="text" id="authenticatorCode" class="border rounded px-4 py-2 w-full" />
+                <p id="invalid" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mt-2">
+                    <strong class="font-bold">Invalid Code!</strong>
+                    <span class="block sm:inline">Try Again.</span>
+                </p>
+            </div>
+
+            <div id="stepContent4" class="hidden mb-28">
+                <h2 class="text-2xl font-bold">Step 4</h2>
+                <p class="mb-4">Your MFA setup is complete. Here are your backup codes. Please save them securely:</p>
+                <div class="bg-gray-50 border border-gray-200 mb-4">
+                    <div class="flex justify-between p-3 bg-gray-200">
+                        <h1 class="font-semibold">Backup Codes ( Save secretly! )</h1>
+                        <button id="copyBackupCodes" class="text-gray-500 px-4">
+                            <span id="default-icon" class="flex items-center gap-4">
+                                <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
+                                    <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm-3 14H5a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2Zm0-4H5a1 1 0 0 1 0-2h8a1 1 0 1 1 0 2Zm0-5H5a1 1 0 0 1 0-2h2V2h4v2h2a1 1 0 1 1 0 2Z"/>
+                                </svg>
+                            </span>
+                            <span id="success-icon" class="hidden flex items-center gap-4">
+                                <svg class="w-4 h-4 text-blue-700 dark:text-blue-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+                    <div class="flex">
+                        <ul id="backupCodes1" class="list-disc ml-8 mb-4 w-1/2"></ul>
+                        <ul id="backupCodes2" class="list-disc ml-8 mb-4 w-1/2"></ul>
+                    </div>
+                </div>
+            </div>            
+        </div>
+        
+        <hr class="border-t border-gray-300 mb-4">
+    
+        <div class="flex justify-end gap-8">
+            <button id="backBtn" class="custombg text-white px-4 py-2 rounded disabled:opacity-50" disabled>Back</button>
+            <button id="nextBtn" class="custombg text-white px-4 py-2 rounded">Next</button>
+        </div>
+    </div>
+    
+</div>
+
+<!-- Disable MFA Popover Modal -->
+<div id="disableMfaPopover" class="bg-white shadow-lg rounded-lg p-6 w-full max-w-2xl h-1/3 hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 overflow-y-auto">
+    <div class="w-full flex justify-end mb-2">
+        <button id="closeDisablePopoverBtn" class="close-btn"><i class="fas fa-times fa-lg"></i></button>
+    </div>
+    <div id="contentDisable" class="mb-2">
+        <h2>Disable MFA</h2>
+        <p>Enter the code generated by your authenticator app to disable MFA:</p>
+        <div class="flex gap-7">
+            <input type="text" id="disableAuthenticatorCode" class="border rounded px-4 py-2 mt-4 w-1/2">
+            <button id="confirmDisableMfaBtn" class="bg-red-500 text-white px-4 py-2 rounded mt-4">Confirm Disable MFA</button>
+        </div>
+        <p id="disableinvalid" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mt-2 w-5/6">
+            <strong class="font-bold">Invalid Code!</strong>
+            <span class="block sm:inline">Try Again.</span>
+        </p>
+    </div>
+</div>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('submitTheme').addEventListener('click', function() {
+            const selectedTheme = document.getElementById('themeSelector').value;
+            document.cookie = `theme=${selectedTheme};path=/`;
+            applyTheme(selectedTheme);
+        });
+    });
+
+    function applyTheme(theme, callback) {
+        const themeStylesheet = document.getElementById('theme-stylesheet');
+        themeStylesheet.href = `/static/themes/${theme}.css`;
+    }
+
+    document.querySelectorAll('#settingsSidenav a').forEach(link => {
+            link.addEventListener('click', function() {
+                document.querySelectorAll('#settingsSidenav a').forEach(item => item.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+
+    // Add fade-in effect to content sections
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('fade-in-visible');
+            }
+        });
+    });
+
+    document.querySelectorAll('.fade-in').forEach(section => {
+        observer.observe(section);
+    });
+
+    let currentStep = 0;
+    const steps = [
+        document.getElementById('stepContent1'),
+        document.getElementById('stepContent2'),
+        document.getElementById('stepContent3'),
+        document.getElementById('stepContent4')
+    ];
+
+    const stepIndicators = document.querySelectorAll('.step-indicator');
+    const enableMfaPopover = document.getElementById('enableMfaPopover');
+    const disableMfaPopover = document.getElementById('disableMfaPopover');
+    const enableMfaBtn = document.getElementById('enableMfaBtn');
+    const disableMfaBtn = document.getElementById('disableMfaBtn');
+    const closeEnablePopoverBtn = document.getElementById('closeEnablePopoverBtn');
+    const closeDisablePopoverBtn = document.getElementById('closeDisablePopoverBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const backBtn = document.getElementById('backBtn');
+    const confirmDisableMfaBtn = document.getElementById('confirmDisableMfaBtn');
+
+    function updateEnablePopover() {
+        steps.forEach((step, index) => {
+            step.classList.toggle('hidden', index !== currentStep);
+        });
+
+        stepIndicators.forEach((indicator, index) => {
+            indicator.classList.toggle('step-active', index === currentStep);
+            if (index < currentStep) {
+                indicator.innerHTML = '<i class="fas fa-check"></i>';
+                indicator.classList.add('step-completed');
+            } else {
+                indicator.innerHTML = index + 1;
+                indicator.classList.remove('step-completed');
+            }
+        });
+
+        backBtn.disabled = currentStep === 0;
+        nextBtn.textContent = currentStep === steps.length - 1 ? 'Finish' : 'Next';
+    }
+
+    nextBtn.addEventListener('click', () => {
+        if (currentStep < steps.length - 1) {
+            if (currentStep === 2) {
+                // Verify the code
+                const code = document.getElementById('authenticatorCode').value;
+                fetch('{% url "verify_mfa_code" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({ code })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        currentStep++;
+                        updateEnablePopover();
+                        
+                        // Display backup codes
+                        const backupCodes = data.backup_codes;
+                        const backupCodesList1 = document.getElementById('backupCodes1');
+                        const backupCodesList2 = document.getElementById('backupCodes2');
+                        backupCodesList1.innerHTML = '';
+                        backupCodesList2.innerHTML = '';
+
+                        backupCodes.forEach((code, index) => {
+                            const li = document.createElement('li');
+                            li.textContent = code;
+                            if (index < 5) {
+                                backupCodesList1.appendChild(li);
+                            } else {
+                                backupCodesList2.appendChild(li);
+                            }
+                        });
+                    } else {
+                        document.getElementById('stepContent3').classList.remove('mb-64');
+                        document.getElementById('stepContent3').classList.add('mb-52');
+                        document.getElementById('invalid').classList.remove('hidden');
+                    }
+                });
+            } else {
+                currentStep++;
+                updateEnablePopover();
+            }
+        } else {
+            // Finish and enable MFA
+            fetch('{% url "finish_mfa_setup" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(() => {
+                enableMfaPopover.classList.add('hidden');
+                location.reload();
+            });
+        }
+    });
+
+    backBtn.addEventListener('click', () => {
+        if (currentStep > 0) {
+            currentStep--;
+            updateEnablePopover();
+        }
+    });
+
+    enableMfaBtn.addEventListener('click', () => {
+        currentStep = 0; // Start from the first step
+        // Initialize MFA setup
+        fetch('{% url "initialize_mfa_setup" %}', {
+            method: 'GET'
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('qrCode').src = data.qr_code;
+            document.getElementById('secretToken').textContent = data.secret_token;
+            enableMfaPopover.classList.remove('hidden');
+        });
+        updateEnablePopover();
+    });
+
+    disableMfaBtn.addEventListener('click', () => {
+        disableMfaPopover.classList.remove('hidden');
+    });
+
+    closeEnablePopoverBtn.addEventListener('click', () => {
+        enableMfaPopover.classList.add('hidden');
+    });
+
+    closeDisablePopoverBtn.addEventListener('click', () => {
+        disableMfaPopover.classList.add('hidden');
+    });
+
+    // Copy backup codes to clipboard
+    document.getElementById('copyBackupCodes').addEventListener('click', () => {
+    const backupCodesList1 = Array.from(document.getElementById('backupCodes1').children);
+    const backupCodesList2 = Array.from(document.getElementById('backupCodes2').children);
+    const backupCodes = [...backupCodesList1, ...backupCodesList2].map(li => li.textContent).join('\n');
+
+    navigator.clipboard.writeText(backupCodes).then(() => {
+        document.getElementById('default-icon').classList.add('hidden');
+        document.getElementById('success-icon').classList.remove('hidden');
+
+        setTimeout(() => {
+            document.getElementById('default-icon').classList.remove('hidden');
+            document.getElementById('success-icon').classList.add('hidden');
+        }, 2000);
+    });
+});
+
+    // Disable MFA
+    confirmDisableMfaBtn.addEventListener('click', () => {
+        const code = document.getElementById('disableAuthenticatorCode').value;
+        console.log('Disable MFA Code:', code); // Debugging
+        fetch('{% url "toggle_mfa" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ code })
+        })
+        .then(response => {
+            console.log('Response Status:', response.status); // Debugging
+            if (!response.ok) {
+                throw new Error('Network response was not ok.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Response Data:', data); // Debugging
+            if (data.success) {
+                location.reload();
+                disableMfaPopover.classList.add('hidden');
+            } else {
+                document.getElementById('disableinvalid').classList.remove('hidden');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        });
+    });
+
+    // Initialize
+    updateEnablePopover();
+</script>
+{% endblock %}

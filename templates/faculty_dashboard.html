@@ -1,0 +1,21 @@
+{% extends 'faculty_base.html' %}
+
+{% block faculty_content %}
+<div id="main" class="transition-all duration-500 p-4 ml-0 mt-36">
+    <h2 class="text-2xl font-semibold mb-4">Courses Taught</h2>
+    <div class="grid grid-cols-3 gap-4">
+        {% for course in previous_courses %}
+        <div class="cardcolor p-6 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold mb-2">{{ course }}</h3>
+            <p class="text-gray-700">Previously Taught</p>
+        </div>
+        {% endfor %}
+        {% for course in current_courses %}
+        <div class="cardcolor p-6 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold mb-2">{{ course }}</h3>
+            <p class="text-gray-700">Currently Teaching</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

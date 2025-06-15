@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}MIIT Academia{% endblock %}</title>
+    <link id="theme-stylesheet" rel="stylesheet" href="">
+    <link rel="stylesheet" href="{% static 'css/tailwind_2.2.19.min.css' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        .banner img {
+            transition: all 0.3s ease;
+        }
+        
+        .banner:hover img {
+            content: url('{% static "images/banner_wordmark_hover.png" %}');
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 9999;
+            padding: 0.5rem 0; /* Adjust as needed */
+            height: relative; /* Adjust the height */
+        }
+
+        main {
+            margin-top: 70px; /* Height of the header + margin */
+            padding-bottom: 6rem; /* Height of the footer */
+            min-height: calc(100vh - 275px); /* Adjust as needed */
+        }
+
+        footer {
+            /* position: relative; */
+            bottom: 0;
+            width: 100%;
+            padding: 1rem 0; /* Adjust as needed */
+        }
+
+        .dropdown-menu a,
+        .dropdown-menu button {
+            color: black;
+            padding: 8px 16px;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        #mySidenav {
+            width: 250px;
+            transform: translateX(-250px); /* Hide it by default */
+        }
+
+        #mySidenav.open {
+            transform: translateX(0); /* Show the sidebar */
+        }
+
+
+        #main.shifted {
+            margin-left: 250px; /* Shift the main content */
+        }
+
+        .toggle .hidden {
+            display: none;
+        }
+
+        .disable-transition * {
+            transition: none !important;
+        }
+        .reducewidth{
+            width: calc(100% - 250px);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <header class="text-white">
+        <nav class="container mx-auto px-4 lg:flex items-center justify-between">
+            <div class="flex items-center justify-between lg:w-auto w-full">
+                <div class="banner mx-4">
+                    <a href="{% url 'home' %}">
+                        <img src="{% static 'images/banner_wordmark.png' %}" alt="MIIT Logo" class="h-16">
+                    </a>
+                </div>
+                <div class="lg:hidden flex items-center mx-4">
+                    <button class="nav-menu-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                            <title>bars-3-bottom-left</title>
+                            <g fill="none">
+                              <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </g>
+                          </svg>                         
+                    </button>
+                </div>
+            </div>
+            <ul class="hidden flex-col lg:flex lg:flex-row items-center space-y-2 lg:space-x-1 pd-3 lg:pd-0 mx-4 mr-16 nav-menu">
+                <li><a href="{% url 'login' %}" class="hidden p-4 "><i class="fa-light fa-sign-in-alt mr-1"></i></a></li>
+                <li><a href="{% url 'home' %}" class="font-bold text-sm p-4 navfontcolor"><i class="fas fa-light fa-home mr-1"></i> Home</a></li>
+                <li><a href="{% url 'academic_calendar' %}" class="font-bold text-sm p-4 navfontcolor"><i class="fas fa-light fa-calendar-alt mr-1"></i> Academic Calendar</a></li>
+                <li><a href="{% url 'login' %}" class="font-bold text-sm p-4 navfontcolor"><i class="fas fa-light fa-list mr-1"></i> Holidays</a></li>
+                <li><a href="{% url 'login' %}" class="font-bold text-sm p-4 navfontcolor"><i class="fas fa-light fa-clock mr-1"></i> Timetable</a></li>
+                <li><a href="https://lms.miit.edu.mm" target="_blank" class="font-bold text-sm p-4 navfontcolor"><i class="fas fa-light fa-graduation-cap mr-1"></i> LMS</a></li>
+                {% if request.user.is_authenticated %}
+                    <li class="relative">
+                        <a href="#" class="font-bold text-sm dropdown-toggle flex items-center pl-4 pr-6 py-2 navfontcolor" id="dropdownMenuButton">
+                            <i class="fas fa-light fa-user-circle mr-2"></i>
+                            {{ UserSalutation }} {{ UserName }} 
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </a>
+                        <div class="dropdown-menu mt-2 w-44 absolute hidden rounded-lg shadow-lg dropdownbg font-bold text-sm" id="dropdownMenu">
+                            <a class="dropdown-item" href="#"><i class="fas fa-id-card mr-2"></i>{{ email_username }}</a>
+                            <hr>
+                            <a class="dropdown-item" href="#"><i class="fas fa-user-tag mr-2"></i>{{ RoleName }}</a>
+                            <a class="dropdown-item" href="{% url 'choose_role' %}"><i class="fas fa-exchange-alt mr-2"></i>Switch Roles</a>
+                            <a class="dropdown-item" href="{% url 'profile'%}"><i class="fas fa-id-badge mr-2"></i>Profile</a>
+                            <hr>
+                            <a class="dropdown-item" href="{% url "home" %}"><i class="fas fa-laptop-house mr-2"></i>Home</a>
+                            <a class="dropdown-item" href="#"><i class="fab fa-creative-commons-by mr-2"></i>Credits</a>
+                            <hr>
+                            <a class="dropdown-item" href="{% url "settings" %}"><i class="fas fa-cog mr-2"></i>Settings</a>
+                            <a class="dropdown-item" href="{% url "change_password" %}"><i class="fas fa-key mr-2"></i>Change Password</a>
+                            <form id="logout_form" action="{% url "logout" %}" method="POST" class="w-full text-left">
+                                {% csrf_token %}
+                                <button class="dropdown-item font-bold" type="submit"><i class="fas fa-door-open mr-2"></i>Log Out</button>
+                            </form>
+                        </div>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'login' %}" class="p-4 text-yellow-300 hover:text-red-500"><i class="fas fa-light fa-sign-in-alt mr-1"></i>Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main class="site-content">
+        {% block content %}
+        <!-- Content goes here -->
+        {% endblock %}
+    </main>
+    <footer id="footer" class="transition-all duration-500 text-white text-base py-6 mt-auto">
+    
+        <div class="container mx-auto px-4 flex flex-col lg:flex-row justify-between items-center">
+            <div class="flex-shrink-0 mb-4 lg:mb-0 mx-8">
+                <a href="{% url 'home' %}">
+                    <img src="{% static 'images/miit-logo.png' %}" alt="MIIT Logo" class="h-20">
+                </a>
+            </div>
+            <div class="flex-grow text-black text-center lg:text-left">
+                <p>Myanmar Institute of Information Technology is a computer university located in Mandalay, Myanmar.<br> It was set up as a National Centre of Excellence in 2015.</p>
+                <p>This application was developed internally at MIIT. </p>
+            </div>
+            <div class="flex space-x-10 mx-10 mt-4 lg:mt-0">
+                <a href="http://facebook.com/miit.edu.mdy.mm"><img src="{% static 'images/facebook_icon.png' %}" alt="Facebook" class="h-8"></a>
+                <a href="https://twitter.com/MIIT_Mandalay"><img src="{% static 'images/twitter_icon.png' %}" alt="Twitter" class="h-8"></a>
+                <a href="https://www.youtube.com/@miitmandalay9212"><img src="{% static 'images/youtube_icon.png' %}" alt="Youtube" class="h-8"></a>
+                <a href="https://www.linkedin.com/school/myanmar-institute-of-information-technology-miit-/mycompany/"><img src="{% static 'images/linkedin_icon.png' %}" alt="LinkedIn" class="h-8"></a>
+            </div>
+        </div>
+    </footer>
+    <!-- Include jQuery and custom scripts -->
+    <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+
+    {% block extra_scripts %}
+    <script>
+        window.onload = function() {
+            const theme = getCookie('theme') || 'original_theme';
+            document.getElementById('theme-stylesheet').href = `/static/themes/${theme}.css`;
+        };
+
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+        
+    
+    document.addEventListener("DOMContentLoaded", () => {
+            // Select all dropdown toggle buttons
+            const dropdownToggles = document.querySelectorAll(".dropdown-toggle")
+
+            dropdownToggles.forEach((toggle) => {
+                toggle.addEventListener("click", () => {
+                // Find the next sibling element which is the dropdown menu
+                const dropdownMenu = toggle.nextElementSibling
+
+                // Toggle the 'hidden' class to show or hide the dropdown menu
+                if (dropdownMenu.classList.contains("hidden")) {
+                    // Hide any open dropdown menus before showing the new one
+                    document.querySelectorAll(".dropdown-menu").forEach((menu) => {
+                    menu.classList.add("hidden")
+                    })
+
+                    dropdownMenu.classList.remove("hidden")
+                } else {
+                    dropdownMenu.classList.add("hidden")
+                }
+                })
+            })
+
+            // Optional: Clicking outside of an open dropdown menu closes it
+            window.addEventListener("click", (event) => {
+                if (!event.target.matches(".dropdown-toggle")) {
+                document.querySelectorAll(".dropdown-menu").forEach((menu) => {
+                    if (!menu.contains(event.target)) {
+                    menu.classList.add("hidden")
+                    }
+                })
+                }
+            })
+            const menubutton = document.querySelector(".nav-menu-button")
+            const menu = document.querySelector(".nav-menu")
+
+            menubutton.addEventListener("click", () => {
+                menu.classList.toggle("hidden")
+            })
+        })
+
+        function disableTransitions() {
+            document.body.classList.add('disable-transition');
+            setTimeout(() => {
+                document.body.classList.remove('disable-transition');
+            }, 100); // Adjust timeout as needed
+        }
+        
+        function openNav() {
+            document.getElementById("mySidenav").classList.add('open');
+            document.getElementById("main").classList.add('reducewidth');
+            document.getElementById("main").classList.add('shifted');
+            document.getElementById("open").classList.add('hidden');
+            document.getElementById("close").classList.remove('hidden');
+            document.getElementById("footer").classList.add('reducewidth');
+            document.getElementById("footer").style.marginLeft = "250px";
+            localStorage.setItem('sidebarState', 'open');
+        }
+    
+        function closeNav() {
+            document.getElementById("mySidenav").classList.remove('open');
+            document.getElementById("main").classList.remove('reducewidth');
+            document.getElementById("main").classList.remove('shifted');
+            document.getElementById("close").classList.add('hidden');
+            document.getElementById("open").classList.remove('hidden');
+            document.getElementById("footer").style.marginLeft = "0";
+            document.getElementById("footer").classList.remove('reducewidth');
+            localStorage.setItem('sidebarState', 'closed');
+        }
+    
+        document.addEventListener('DOMContentLoaded', function () {
+            const sidebarState = localStorage.getItem('sidebarState');
+            disableTransitions(); // Disable transitions initially
+            if (sidebarState === 'open') {
+                openNav();
+            } else {
+                closeNav();
+            }
+        });
+    </script>    
+    {% endblock %}
+
+</body>
+</html>

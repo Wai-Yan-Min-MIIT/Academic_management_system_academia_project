@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Backup Codes</title>
+</head>
+<body>
+    <h1>Backup Codes</h1>
+    <p>Store these codes in a safe place. You can use them to log in if you lose access to your authenticator app.</p>
+    <ul>
+        {% for code in backup_codes %}
+        <li>{{ code }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

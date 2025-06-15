@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Profile - MIIT Academia{% endblock %}
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl text-center font-bold mb-8">Profile</h1>
+    
+    {% if selected_user %}
+        {% if selected_user_type == 'Student' %}
+            <!-- Personal Information -->
+            <div class="p-6 m-6 bg-white rounded-3xl mx-10">
+                <fieldset class=" bg-white p-6 border border-gray-300 rounded-xl">
+                    <legend class="text-2xl mb-4">Personal Information</legend>
+                    <form method="post"  class="mb-8" id="search-form" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <img id="avatar-image" src="{% static 'images/users/Students/' %}{{ user_id }}.png" alt="Information Icon" class="border border-black w-28 h-28 mb-4" onerror="this.onerror=null; this.src='{% static 'images/users/avatar.png' %}';">
+                            <input type="file" id="file-input" name="avatar" class="hidden" disabled>
+                        </div>                   
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="student_name" class="text w-full md:w-1/4">Student Name:</label>
+                            <input type="text" id="student_name" name="student_name" value="{{ selected_user.StudentName }}" class="border border-gray-300 rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" readonly>
+                        </div>
+    
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="student_nrc" class="text w-full md:w-1/4">Student NRC:</label>
+                            <input type="text" id="student_nrc" name="student_nrc" value="{{ selected_user.StudentNRC }}" class="border border-gray-300 rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" readonly>
+                        </div>
+    
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="nationality" class="text w-full md:w-1/4">Nationality:</label>
+                            <input type="text" id="nationality" name="nationality" value="{{ selected_user.Nationality }}" class="border border-gray-300 rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" readonly>
+                        </div>
+    
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="religion" class="text w-full md:w-1/4">Religion:</label>
+                            <input type="text" id="religion" name="religion" value="{{ selected_user.Religion }}" class="border border-gray-300 rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" readonly>
+                        </div>
+    
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="student_dob" class="text w-full md:w-1/4">Date of Birth:</label>
+                            <input type="date" id="student_dob" name="student_dob" value="{{ selected_user.StudentDOB|date:'Y-m-d' }}" class="border border-gray-300 rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" readonly>
+                        </div>
+    
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="student_phone" class="text w-full md:w-1/4">Phone Number:</label>
+                            <input type="text" id="student_phone" name="student_phone" value="{{ selected_user.StudentPhone }}" class="border border-gray-300 rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" readonly>
+                        </div>
+    
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="email" class="text w-full md:w-1/4">Email:</label>
+                            <input type="hidden" id="student_email" name="student_email" value="{{ selected_user.UserID.username }}" class="border border-gray-300 rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" readonly>
+                            <input type="email" id="email" name="email" value="{{ selected_user.UserID.username }}" class="border border-gray-300 rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" readonly>
+                        </div>
+                        
+                    </form>
+
+                </fieldset>
+            </div>
+
+            <!-- MIIT Academic Information -->
+            <div class="p-6 m-6 cardcolor rounded-3xl mx-10">
+                <fieldset class=" cardcolor p-6 border bordercolor rounded-xl">
+                    <legend class="text-2xl mb-4">MIIT Academic Information</legend>
+                    <form method="POST" id='search-form' class='mb-8'>
+                        {% csrf_token %}
+                        <input type="hidden" id="student_email" name="student_email" value="{{ selected_user.UserID.username }}" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" readonly>
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="roll_number" class="text w-full md:w-1/4">Roll Number:</label>
+                            <input type="text" id="roll_number" name="roll_number" value="{{ selected_user.RollNumber }}" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" readonly>
+                        </div>
+
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="program" class="text w-full md:w-1/4">Program:</label>
+                            <input type="text" id="program" name="program" value="{{ program.0 }}" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" readonly>
+                        </div>
+
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="discipline" class="text w-full md:w-1/4">Discipline:</label>
+                            <input type="text" id="discipline" name="discipline" value="{{ discipline.0 }}" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" readonly>
+                        </div>
+
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="batch_year" class="text w-full md:w-1/4">Batch Year:</label>
+                            <input type="text" id="batch" name="batch" value="{{ batch.0 }}" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" readonly>
+                        </div>
+
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="section_name" class="text w-full md:w-1/4">Section:</label>
+                            <input type="text" id="section_name" name="section_name" value="{{ selected_user.SectionName }}" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" readonly>
+                        </div>
+
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="miit_id" class="text w-full md:w-1/4">MIIT ID:</label>
+                            <input type="text" id="miit_id" name="miit_id" value="{{ selected_user.MIITID }}" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" readonly>
+                        </div>
+
+                        <div class="mb-4 flex items-center">
+                            <label for="acb_status" class="text w-full md:w-1/4">ACB Status:</label>
+                            <input type="checkbox" id="acb_status" name="acb_status" {% if selected_user.ACBStatus %}checked{% endif %} class="border bordercolor rounded-md px-4 mt-2 md:mt-0 md:ml-2" readonly>
+                        </div>
+                        
+                    </form>
+                </fieldset>
+            </div>
+
+            <!-- High School Information -->
+            <div class="p-6 m-6 bg-white rounded-3xl mx-10">
+                <fieldset class=" bg-white p-6 border border-gray-300 rounded-xl">
+                    <legend class="text-2xl mb-4">High School Information</legend>
+                    <form method="POST" id='search-form' class='mb-8'>
+                        {% csrf_token %}
+                        <input type="hidden" id="student_email" name="student_email" value="{{ selected_user.UserID.username }}" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" readonly>
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="matric_roll_number" class="text w-full md:w-1/4">Matric Roll Number:</label>
+                            <input type="text" id="matric_roll_number" name="matric_roll_number" value="{{ selected_user.MatricRollNumber }}" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" readonly>
+                        </div>
+
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="matric_exam_year" class="text w-full md:w-1/4">Matric Exam Year:</label>
+                            <input type="text" id="matric_exam_year" name="matric_exam_year" value="{{ selected_user.MatricExamYear }}" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" readonly>
+                        </div>
+                        
+                    </form>
+
+                </fieldset>
+            </div>
+
+                <!-- Guardian Information -->
+            <div class="p-6 m-6 bg-white rounded-3xl mx-10">
+                <fieldset class=" bg-white p-6 border border-gray-300 rounded-xl">
+                    <legend class="text-2xl mb-4">Guardian Information</legend>
+                    <form method="POST" class="mb-8" id="search-form">
+                        {% csrf_token %}
+                        <input type="hidden" id="student_email" name="student_email" value="{{ selected_user.UserID.username }}" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" readonly>
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="father_name" class="text w-full md:w-1/4">Father's Name:</label>
+                            <input type="text" id="father_name" name="father_name" value="{{ selected_user.FatherName }}" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" readonly>
+                        </div>
+
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="father_nrc" class="text w-full md:w-1/4">Father's NRC:</label>
+                            <input type="text" id="father_nrc" name="father_nrc" value="{{ selected_user.FatherNRC }}" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" readonly>
+                        </div>
+
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="father_phone" class="text w-full md:w-1/4">Father's Phone Number:</label>
+                            <input type="text" id="father_phone" name="father_phone" value="{{ selected_user.FatherPhoneNumber }}" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" readonly>
+                        </div>
+
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="mother_name" class="text w-full md:w-1/4">Mother's Name:</label>
+                            <input type="text" id="mother_name" name="mother_name" value="{{ selected_user.MotherName }}" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" readonly>
+                        </div>
+
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="mother_nrc" class="text w-full md:w-1/4">Mother's NRC:</label>
+                            <input type="text" id="mother_nrc" name="mother_nrc" value="{{ selected_user.MotherNRC }}" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" readonly>
+                        </div>
+
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="mother_phone" class="text w-full md:w-1/4">Mother's Phone Number:</label>
+                            <input type="text" id="mother_phone" name="mother_phone" value="{{ selected_user.MotherPhoneNumber }}" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" readonly>
+                        </div>
+                      
+                    </form>
+
+                </fieldset>
+            </div>
+
+            <!-- Address -->
+            <div class="p-6 m-6 bg-white rounded-3xl mx-10">
+                <fieldset class=" bg-white p-6 border border-gray-300 rounded-xl">
+                    <legend class="text-2xl mb-4">Address</legend>
+                    <form method="POST" class="mb-8" id="search-form">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <input type="hidden" id="student_email" name="student_email" value="{{ selected_user.UserID.username }}" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" readonly>
+                            <textarea id="address" name="address" class="border border-gray-300 rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-full">{{ selected_user.Address }}</textarea>
+                        </div>
+                      
+                    </form>
+
+                </fieldset>
+            </div>
+        {% endif %}
+
+    {% endif %}
+
+    {% if selected_user %}
+        {% if selected_user_type == 'Faculty' %}
+            <!--Faculty Personal Information -->
+            <div class="p-6 m-6 bg-white rounded-3xl mx-10">
+                <fieldset class="bg-white p-6 border border-gray-300 rounded-xl">
+                    <legend class="text-2xl mb-4">Personal Information</legend>
+                    <form method="post" class="mb-8" id="search-form" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <img id="avatar-image" src="{% static 'images/users/FacultyStaffs/' %}{{ user_id }}.png" alt="Information Icon" class="border border-black w-28 h-28 mb-4" onerror="this.onerror=null; this.src='{% static 'images/users/avatar.png' %}';">
+                            <input type="file" id="file-input" name="avatar" class="hidden" disabled>
+                            
+                        </div>
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="faculty_name" class="text w-full md:w-1/4">Faculty Name:</label>
+                            <input type="text" id="faculty_name" name="faculty_name" value="{{ selected_user.FacultyStaffName }}" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" disabled>
+                        </div>
+
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="salutation" class="text w-full md:w-1/4">Salutation:</label>
+                            <input type="text" id="salutation" name="salutation" value="{{ selected_user.Salutation }}" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" disabled>
+                        </div>
+
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="short_name" class="text w-full md:w-1/4">Short Name:</label>
+                            <input type="text" id="short_name" name="short_name" value="{{ selected_user.ShortName }}" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" disabled>
+                        </div>
+
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="designation" class="text w-full md:w-1/4">Designation:</label>
+                            <input type="text" id="designation" name="designation" value="{{ selected_user.Designation }}" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" disabled>
+                        </div>
+
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="department" class="text w-full md:w-1/4">Department:</label>
+                            <input type="text" id="department" name="department" value="{{ selected_user.Department }}" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" disabled>
+                        </div>
+
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="nrc" class="text w-full md:w-1/4">NRC:</label>
+                            <input type="text" id="nrc" name="nrc" value="{{ selected_user.NRC }}" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" disabled>
+                        </div>
+
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="phone" class="text w-full md:w-1/4">Phone:</label>
+                            <input type="text" id="phone" name="phone" value="{{ selected_user.Phone }}" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" disabled>
+                        </div>
+
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="address" class="text w-full md:w-1/4">Address:</label>
+                            <textarea id="address" name="address" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" >{{ selected_user.Address }}</textarea>
+                        </div>
+
+                        <div class="mb-4 flex flex-col md:flex-row items-center">
+                            <label for="email" class="text w-full md:w-1/4">Email:</label>
+                            <input type="hidden" id="faculty_email" name="faculty_email" value="{{ selected_user.UserID.username }}" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" disabled>
+                            <input type="email" id="email" name="email" value="{{ selected_user.UserID.username }}" class="border bordercolor rounded-md px-4 py-2 mt-2 md:mt-0 md:ml-2 w-full md:w-3/4" disabled>
+                        </div>
+
+                        
+                    </form>
+
+                </fieldset>
+            </div>
+        {% endif %}
+
+    {% endif %}
+
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                {% if 'not_found' in message.tags %}
+                    <li class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 ml-10">
+                        <strong class="font-bold">Error!</strong>
+                        <span class="block sm:inline">{{ message }}</span>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+
+{% block title %}Discipline Management{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-center text-2xl font-bold mb-8">Manage Discipline</h1>
+    <div class="mx-10 bg-white border border-gray-200 shadow dark:bg-gray-800 dark:border-gray-700">
+        <div class="p-4 bg-white rounded-lg dark:bg-gray-800" id="list_disciplines">
+            {% if disciplines %}
+                <table class="table-auto w-full mb-8 border-collapse border border-gray-300">
+                    <thead style="background-color: #412F2F;" class="text-white">
+                        <tr class="text-left">
+                            <th class="px-4 py-2">Discipline ID</th>
+                            <th class="px-4 py-2">Full Name</th>
+                            <th class="px-4 py-2">Short Name</th>
+                            <th class="px-4 py-2">Description</th>
+                            <th class="px-4 py-2">Edit</th>
+                        </tr>
+                    </thead>
+                    <tbody id="discipline-table-body">
+                        {% for discipline in disciplines %}
+                        <tr class="{% cycle 'bg-gray-200' 'bg-white' %}">
+                            <td class="border px-4 py-2">{{ discipline.DisciplineID }}</td>
+                            <td class="border px-4 py-2">{{ discipline.DisciplineFullName }}</td>
+                            <td class="border px-4 py-2">{{ discipline.DisciplineShortName }}</td>
+                            <td class="border px-4 py-2">{{ discipline.DisciplineDescription }}</td>
+                            <td class="border px-4 py-2 flex space-x-2 justify-center">
+                                <button class="edit-discipline text-blue-500 hover:text-blue-700" data-id="{{ discipline.DisciplineID }}">
+                                    <i class="fas fa-pen"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        <tr id="new-discipline-row" class="bg-gray-100">
+                            <td class="border px-4 py-2">Create New</td>
+                            <td class="border px-4 py-2"><input type="text" id="new-discipline-fullname" class="w-full px-2 py-1 border rounded" placeholder="Full Name"></td>
+                            <td class="border px-4 py-2"><input type="text" id="new-discipline-shortname" class="w-full px-2 py-1 border rounded" placeholder="Short Name"></td>
+                            <td class="border px-4 py-2"><input type="text" id="new-discipline-description" class="w-full px-2 py-1 border rounded" placeholder="Description"></td>
+                            <td class="border px-4 py-2 flex justify-center">
+                                <button id="submit-new-discipline" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700 ">Submit</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No disciplines to show</p>
+            {% endif %}
+        </div>
+    </div>
+    <div class="text-center">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="{{ message.tags }}">
+                        {% if message.tags == 'error' %}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-1 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        {% elif message.tags == 'success' %}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-1 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        {% elif message.tags == 'info' %}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-1 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        {% endif %}
+                        <span class="align-middle">{{ message }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const submitButton = document.getElementById('submit-new-discipline');
+
+        submitButton.addEventListener('click', function () {
+            const fullName = document.getElementById('new-discipline-fullname').value;
+            const shortName = document.getElementById('new-discipline-shortname').value;
+            const description = document.getElementById('new-discipline-description').value;
+
+            if (fullName && shortName && description) {
+                fetch("{% url 'manage_discipline' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: JSON.stringify({
+                        DisciplineFullName: fullName,
+                        DisciplineShortName: shortName,
+                        DisciplineDescription: description,
+                        create_discipline: true
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Failed to add discipline');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to add discipline');
+                });
+            } else {
+                alert('All fields are required');
+            }
+        });
+
+        document.querySelectorAll('.edit-discipline').forEach(button => {
+            button.addEventListener('click', () => {
+                const row = button.closest('tr');
+                const disciplineId = button.getAttribute('data-id');
+                const fullNameCell = row.cells[1];
+                const shortNameCell = row.cells[2];
+                const descriptionCell = row.cells[3];
+
+                const fullName = fullNameCell.innerText;
+                const shortName = shortNameCell.innerText;
+                const description = descriptionCell.innerText;
+
+                fullNameCell.innerHTML = `<input type="text" value="${fullName}" class="w-full px-2 py-1 border rounded">`;
+                shortNameCell.innerHTML = `<input type="text" value="${shortName}" class="w-full px-2 py-1 border rounded">`;
+                descriptionCell.innerHTML = `<input type="text" value="${description}" class="w-full px-2 py-1 border rounded">`;
+
+                const saveButton = document.createElement('button');
+                saveButton.classList.add('px-4', 'py-2', 'bg-green-500', 'text-white', 'rounded', 'hover:bg-green-700');
+                saveButton.innerText = 'Save';
+                button.replaceWith(saveButton);
+
+                saveButton.addEventListener('click', function () {
+                    const updatedFullName = fullNameCell.querySelector('input').value;
+                    const updatedShortName = shortNameCell.querySelector('input').value;
+                    const updatedDescription = descriptionCell.querySelector('input').value;
+
+                    fetch("{% url 'manage_discipline' %}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": "{{ csrf_token }}"
+                        },
+                        body: JSON.stringify({
+                            DisciplineID: disciplineId,
+                            DisciplineFullName: updatedFullName,
+                            DisciplineShortName: updatedShortName,
+                            DisciplineDescription: updatedDescription,
+                            edit_discipline: true
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        } else {
+                            alert('Failed to update discipline');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Failed to update discipline');
+                    });
+                });
+            });
+        });
+
+        
+    });
+</script>
+{% endblock %}

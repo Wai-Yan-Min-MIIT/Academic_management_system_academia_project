@@ -1,0 +1,192 @@
+{% extends 'student_affairs_base.html' %}
+{% block title %}Generate Transcript - MIIT Academia{% endblock %}
+
+{% block student_affairs_content %}
+<div id="main" class="transition-all duration-500 p-4 ml-0 mt-36 container">
+    <h1 class="text-3xl text-center font-bold mb-8">Generate Transcript</h1>
+    <form method="post" class="mb-8" id="search-form">
+        {% csrf_token %}
+        <div class="flex items-center space-x-4 ml-10">
+            <label for="email" class="text-lg font-medium">Email:</label>
+            {% if email %}
+                <input type="text" id="email" name="email" value="{{email}}" class="border rounded-md py-2 px-3 w-1/2" placeholder="Enter email to search" autocomplete="off">
+            {% else %}
+                <input type="text" id="email" name="email" class="border rounded-md py-2 px-3 w-1/2" placeholder="Enter email to search" autocomplete="off">
+            {% endif %}
+            <button type="submit" class="custombg font-bold py-2 px-4 rounded">Search</button>
+        </div>
+    </form>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                {% if 'user_not_found' in message.tags or 'student_not_found' in message.tags %}
+                    <li class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 mx-10 w-3/5">
+                        <strong class="font-bold">Error!</strong>
+                        <span class="block sm:inline">{{ message }}</span>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if selected_user %}
+    <div class="mt-8">
+        <h2 class="text-2xl font-semibold mb-4">Generate Transcript for {{ selected_user.StudentName }}</h2>
+        <form method="post" action="{% url 'generate_transcript' %}" class="mb-8" id="search-form">
+            {% csrf_token %}
+            <input type="hidden" name="email" value="{{ email }}">
+            <button type="submit" name='generate_transcript' class="custombg font-bold py-2 px-4 rounded">Generate Transcript</button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+<style>
+    .reducewidth{
+            width: calc(100% - 250px);
+        }
+</style>
+{% block extra_scripts %}
+{% load static %}
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'js/jquery_ui_1.13.0.min.js' %}"></script>
+<link rel="stylesheet" href="{% static 'css/jquery_ui_1.13.0.min.css' %}">
+
+<script>
+window.onload = function() {
+    const theme = getCookie('theme') || 'original_theme';
+    document.getElementById('theme-stylesheet').href = `/static/themes/${theme}.css`;
+};
+
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+$(function() {
+    // Autocomplete for email field
+    $("#email").autocomplete({
+        source: function(request, response) {
+            $.ajax({
+                url: "{% url 'autocomplete_emails' %}",
+                data: {
+                    term: request.term
+                },
+                success: function(data) {
+                    var maxResults = 120;
+                    var filteredResults = data.emails.slice(0, maxResults);
+                    response(filteredResults);
+                }
+            });
+        },
+        minLength: 1,
+        delay: 0,
+        select: function(event, ui) {
+            event.preventDefault();
+            $('#email').val(ui.item.value);
+        },
+        open: function() {
+            var maxHeight = 200;
+            $(".ui-autocomplete").css("max-height", maxHeight + "px");
+            $(".ui-autocomplete").css("overflow-y", "auto");
+        }
+    });
+
+    // Prevent form submission when autocompleting
+    $("#search-form").submit(function(event) {
+        event.preventDefault();
+        this.submit();
+    });
+});
+
+$(document).ready(function() {
+    $('#dropdownMenuButton').on('click', function(event) {
+        event.preventDefault();
+        $('#dropdownMenu').toggle();
+    });
+
+    $(document).on('click', function(event) {
+        if (!$(event.target).closest('#dropdownMenuButton, #dropdownMenu').length) {
+            $('#dropdownMenu').hide();
+        }
+    });
+});
+function disableTransitions() {
+    document.body.classList.add('disable-transition');
+    setTimeout(() => {
+        document.body.classList.remove('disable-transition');
+    }, 100); // Adjust timeout as needed
+}
+
+function openNav() {
+    document.getElementById("mySidenav").classList.add('open');
+    document.getElementById("main").classList.add('reducewidth');
+    document.getElementById("main").classList.add('shifted');
+    document.getElementById("open").classList.add('hidden');
+    document.getElementById("close").classList.remove('hidden');
+    document.getElementById("footer").classList.add('reducewidth');
+    document.getElementById("footer").style.marginLeft = "250px";
+    localStorage.setItem('sidebarState', 'open');
+}
+
+function closeNav() {
+    document.getElementById("mySidenav").classList.remove('open');
+    document.getElementById("main").classList.remove('reducewidth');
+    document.getElementById("main").classList.remove('shifted');
+    document.getElementById("close").classList.add('hidden');
+    document.getElementById("open").classList.remove('hidden');
+    document.getElementById("footer").style.marginLeft = "0";
+    document.getElementById("footer").classList.remove('reducewidth');
+    localStorage.setItem('sidebarState', 'closed');
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const sidebarState = localStorage.getItem('sidebarState');
+    disableTransitions(); // Disable transitions initially
+    if (sidebarState === 'open') {
+        openNav();
+    } else {
+        closeNav();
+    }
+    const dropdownToggles = document.querySelectorAll(".dropdown-toggle")
+
+    dropdownToggles.forEach((toggle) => {
+        toggle.addEventListener("click", () => {
+        // Find the next sibling element which is the dropdown menu
+        const dropdownMenu = toggle.nextElementSibling
+
+        // Toggle the 'hidden' class to show or hide the dropdown menu
+        if (dropdownMenu.classList.contains("hidden")) {
+            // Hide any open dropdown menus before showing the new one
+            document.querySelectorAll(".dropdown-menu").forEach((menu) => {
+            menu.classList.add("hidden")
+            })
+
+            dropdownMenu.classList.remove("hidden")
+        } else {
+            dropdownMenu.classList.add("hidden")
+        }
+        })
+    })
+
+    // Optional: Clicking outside of an open dropdown menu closes it
+    window.addEventListener("click", (event) => {
+        if (!event.target.matches(".dropdown-toggle")) {
+        document.querySelectorAll(".dropdown-menu").forEach((menu) => {
+            if (!menu.contains(event.target)) {
+            menu.classList.add("hidden")
+            }
+        })
+        }
+    })
+    const menubutton = document.querySelector(".nav-menu-button")
+    const menu = document.querySelector(".nav-menu")
+
+    menubutton.addEventListener("click", () => {
+        menu.classList.toggle("hidden")
+    })
+});
+
+</script> 
+{% endblock %}

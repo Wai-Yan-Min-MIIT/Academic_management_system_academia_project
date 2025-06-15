@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Academic System Management - MIIT Academia{% endblock %}
+
+{% block content %}
+<div class="toggle flex border border-gray-300 py-2 fixed top-16 left-0 w-full cardcolor z-50">
+    <p class="text-md ml-4 py-2 mt-3"><a href="{% url 'admin_panel' %}" class="link">MIIT Academia - Admin Panel</a> / Academic System Managements</p>
+</div>
+<div class="container mx-auto px-8 py-8 mt-36">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <a href="{% url 'academic_settings' %}" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6 text-center">
+                <div class="flex justify-center cardicon">
+                    <i class="fas fa-light fa-cog w-12 h-12 mb-6 mx-auto fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Academic Settings</h3>
+                <p class="text-gray-700">Click here to make changes for academic.</p>
+            </div>
+        </a>
+
+        <!-- Upload Base Chart Card -->
+        <a href="#" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6 text-center">
+                <div class="flex justify-center cardicon">
+                    <i class="fas fa-light fa-upload w-12 h-12 mb-6 mx-auto fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Upload BaseChart</h3>
+                <p class="text-gray-700">Click here to upload a new BaseChart.</p>
+            </div>
+        </a>
+
+        <!-- View Base Chart Card -->
+        <a href="{% url 'view_base_chart' %}" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6 text-center">
+                <div class="flex justify-center cardicon">
+                    <i class="fas fa-light fa-bars-progress w-12 h-12 mb-6 mx-auto fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">View Base Chart</h3>
+                <p class="text-gray-700">Click here to view base chart settings.</p>
+            </div>
+        </a>
+
+        <!-- Upload Timetable Card -->
+        <a href="#" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6 text-center">
+                <div class="flex justify-center cardicon">
+                    <i class="fas fa-light fa-calendar-alt w-12 h-12 mb-6 mx-auto fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Upload Timetable</h3>
+                <p class="text-gray-700">Click here to upload a new timetable.</p>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock %}

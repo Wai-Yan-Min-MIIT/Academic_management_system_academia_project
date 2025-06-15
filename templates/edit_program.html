@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Edit Program - MIIT Academia{% endblock %}
+
+{% block content %}
+<div class="toggle flex border border-gray-300 py-2 fixed top-16 left-0 w-full cardcolor z-50">
+    <p class="text-md ml-4 py-2 mt-3"><a href="{% url 'admin_panel' %}" class="link">MIIT Academia - Admin Panel</a> / <a href="{% url 'academic_system_management' %}" class="link">Academic System Management</a> / <a href="{% url 'academic_settings' %}" class="link">Academic Settings</a> / Program</p>
+</div>
+<h2 class="text-2xl font-semibold mt-36 text-center">Edit Program</h2>
+<div class="container mx-auto p-4 ">
+    <form method="get" id="program_form" class="mb-8 w-2/3 mx-auto cardcolor border border-gray-300 p-4 rounded-md flex flex-col lg:flex-row items-center gap-4">
+        <label for="program_select" class="mb-2 font-bold px-2 w-full lg:w-auto text-center lg:text-left">Select Program</label>
+        <select id="program_select" name="program_id" class="border border-gray-300 rounded-md py-2 px-3 w-full lg:flex-1">
+            <option value="">Select Program</option>
+            {% for program in programs %}
+                <option value="{{ program.ProgramID }}" {% if program.ProgramID == selected_program_id %}selected{% endif %}>{{ program.ProgramFullName }}</option>
+            {% endfor %}
+        </select>
+    </form>
+
+    {% if form %}
+        <form method="POST" class="cardcolor my-4 py-8 w-2/3 mx-auto border-2 border-gray-300 rounded-md">
+            {% csrf_token %}
+            
+            <div class="grid md:grid-cols-1 lg:grid-cols-2">
+                <div>
+                    <div class="mb-10">
+                        <label for="ProgramFullName" class="block mb-4 font-bold mx-5">Program Full Name</label>
+                        {{ form.ProgramFullName|add_class:"border border-gray-300 rounded-md py-2 px-3 w-5/6 mx-5" }}
+                    </div>
+                    <div class="mb-10">
+                        <label for="ProgramShortName" class="block mb-4 font-bold mx-5">Program Short Name</label>
+                        {{ form.ProgramShortName|add_class:"border border-gray-300 rounded-md py-2 px-3 w-5/6 mx-5" }}
+                    </div>
+                </div>
+                <div>
+                    <div class="mb-10">
+                        <label for="ProgramDuration" class="block mb-4 font-bold mx-5">Duration</label>
+                        {{ form.ProgramDuration|add_class:"border border-gray-300 rounded-md py-2 px-3 w-5/6 mx-5" }}
+                    </div>
+                    <div class="mb-10">
+                        <label for="ProgramDescription" class="block mb-4 font-bold mx-5">Description</label>
+                        {{ form.ProgramDescription|add_class:"border border-gray-300 rounded-md py-2 px-3 w-5/6 mx-5 h-20" }}
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-center">
+                <button type="submit" class="custombg text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Update</button>
+            </div>
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative my-4 w-2/3 mx-auto">
+                        <strong class="font-bold">Success!</strong>
+                        <span class="block sm:inline">{{ message }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </form>
+    {% endif %}
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#program_select').change(function() {
+            $('#program_form').submit();
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends 'student_base.html' %}
+
+{% block title %}Check Grades - MIIT Academia{% endblock %}
+
+{% block student_content %}
+<div id="main" class="transition-all duration-500 p-4 ml-16 mt-36 container">
+    <div class="cardcolor3 p-4 w-5/6 mb-8">
+        <h3 class="text-2xl mb-3">Welcome, {{UserSalutation}} {{ student_name }}</h3>
+        <h6 class="text-md">Your grades for II Semester 2022-2023 are included below.<br>
+            Contact MIIT Student Affairs or Administration if you feel there has been a mistake in the gradesheet.</h6>
+        <h6 style="color:red" class='font-bold'>IMPORTANT: Please note that this page cannot be used as an official record of your grades.</h6>
+    </div>
+    <h6 class="text border-t border-gray-300 py-3 w-5/6">II Semester 2021-2022</h6>
+    <h6 class="text border-tb border-gray-300 py-3 w-5/6">May 12, 2022 to September 20, 2022</h6>
+    <h6 class="border-t border-gray-300 py-3 w-5/6">{{ selected_semester }}</h6>
+
+    {% if course_info %}
+    <table id="data-table" class="w-5/6 table-auto divide-y divide-gray-300 ">
+        <thead>
+            <tr class="text-left font-small">
+                <th class="py-2 px-4">#</th>
+                <th class="py-2 px-4">Course Code</th>
+                <th class="py-2 px-4">Course Name</th>
+                <th class="py-2 px-4">Course Credits</th>
+                <th class="py-2 px-4">Grade</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in course_info %}
+                <tr class="{% cycle 'bg-brown-500' 'bg-white' %} text-sm border-b border-gray-300">
+                    <td class="py-2 px-4">{{ forloop.counter }}</td>
+                    <td class="py-2 px-4">{{ course.CourseCode }}</td>
+                    <td class="py-2 px-4">{{ course.CourseName }}</td>
+                    <td class="py-2 px-4">{{ course.CourseCredits }}</td>
+                    <td class="py-2 px-4">{{ course.Grade }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+    <div class="w-5/6 border-t border-b border-gray-300 mt-8">
+        {% if grade_sheet_data %}
+        <table id="gradesheet-table" class="w-full table-auto divide-y divide-gray-300 mb-3">
+            <thead>
+                <tr class="text-left font-small">
+                    <th class="py-2 px-4">Semester Credits</th>
+                    <th class="py-2 px-4">Accumulated Credits</th>
+                    <th class="py-2 px-4">Semester GPA</th>
+                    <th class="py-2 px-4">Cumulative GPA</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="{% cycle 'bg-brown-500' 'bg-white' %} text-sm border-b border-gray-300">
+                    <td class="py-2 px-4">{{ grade_sheet_data.SemesterCredits }}</td>
+                    <td class="py-2 px-4">{{ grade_sheet_data.AccumulatedCredits }}</td>
+                    <td class="py-2 px-4">{{ grade_sheet_data.SGPA }}</td>
+                    <td class="py-2 px-4">{{ grade_sheet_data.CGPA }}</td>
+                </tr>
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+    <p class="m-3 text-sm ">Legend</p>
+    {% if grade_points_data %}
+        <table id="gradespoint-table" class="w-5/6 table-auto divide-y divide-gray-300 mb-3 bg-yellow">
+            <tbody>
+                <tr class="text-sm border-b border-gray-300">
+                    <td class="py-2 px-4">Grade</td>
+                    {% for point in grade_points_data %}
+                    {% if point.Grade != 'SNO' and point.Grade != 'DNR' %}
+                        <td class="py-2 px-4">{{ point.Grade }}</td>
+                    {% endif %}
+                    {%endfor%}
+                </tr>
+                <tr class="text-sm border-b bordercolor">
+                    <td class="py-2 px-4">Grade Points</td>
+                    {% for point in grade_points_data %}
+                    {% if point.Grade != 'SNO' and point.Grade != 'DNR' %}
+                        <td class="py-2 px-4">{{point.GradePointValue}}</td>
+                        {% endif %}
+                    {%endfor%}
+                </tr>
+            </tbody>
+        </table>
+    {% endif %}
+    <div class="flex justify-between w-5/6 mt-8">
+        <form id="prevForm" action="{% url 'get_grades' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="selected_semester" value="{{ prev_semester }}">
+            <button type="submit" class="custombg font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" {% if not prev_semester %}disabled{% endif %}>Previous Semester</button>
+        </form>
+        <form id="nextForm" action="{% url 'get_grades' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="selected_semester" value="{{ next_semester }}">
+            <button type="submit" class="custombg font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" {% if not next_semester %}disabled{% endif %}>Next Semester</button>
+        </form>
+    </div>
+</div>
+
+{% comment %} <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script> {% endcomment %}
+<script>
+$(document).ready(function() {
+    $('#data-table').DataTable({
+        "paging": false,
+        "info": false,
+        "ordering": false,
+        "searching": false
+    });
+    $('#gradesheet-table').DataTable({
+        "paging": false,
+        "info": false,
+        "ordering": false,
+        "searching": false
+    });
+});
+</script>
+<style>
+    tr.bg-brown-500 {
+        background-color: #c0dfb1;
+    }
+    tr.border-b{
+        border-bottom-width: 3px; /* Increase this value to make the border thicker */
+    }
+    h6.border-tb {
+        border-bottom-width: 2px;
+        border-top-width: 2px;
+    }
+    table.bg-yellow{
+        background-color: #f1efce;
+    }
+</style>
+{% endblock %}

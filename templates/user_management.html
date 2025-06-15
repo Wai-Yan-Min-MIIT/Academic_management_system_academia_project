@@ -1,0 +1,50 @@
+{% extends 'base.html' %} 
+{% load static %}
+{% block title %}User Management - MIIT Academia{% endblock %} 
+
+{% block content %}
+<div class="toggle flex border border-gray-300 py-2 fixed top-16 left-0 w-full cardcolor z-50">
+    <p class="text-md ml-4 py-2 mt-3"><a href="{% url 'admin_panel' %}" class="link">MIIT Academia - Admin Panel</a> / User Managements</p>
+</div>
+<div class="container mx-auto px-8 py-8 mt-28">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"> 
+        <a href="{% url 'create_student' %}" class="cardcolor rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out">
+            <div class="p-6">
+                <img src="{% static 'images/student_account.png' %}" alt="Student Icon" class="w-12 h-12 mb-4 mx-auto">
+                <h3 class="text-xl font-semibold mb-2">Create Student Account</h3>
+                <p class="text-gray-700">Click here to create a new student account.</p>
+            </div>
+        </a>
+        <a href="{% url 'create_faculty' %}" class="cardcolor rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out">
+            <div class="p-6">
+                <img src="{% static 'images/faculty_staff.png' %}" alt="Faculty Icon" class="w-12 h-12 mb-4 mx-auto">
+                <h3 class="text-xl font-semibold mb-2">Create Faculty/Staff Account</h3>
+                <p class="text-gray-700">Click here to create a new faculty/staff account.</p>
+            </div>
+        </a>
+
+        <a href="{% url "edit_user_information" %}" class="cardcolor rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out">
+            <div class="p-6">
+                <img src="{% static 'images/information_center.png' %}" alt="Information center Icon" class="w-12 h-12 mb-4 mx-auto">
+                <h3 class="text-xl font-semibold mb-2">Edit User Information</h3>
+                <p class="text-gray-700">Click here to edit user information.</p>
+            </div>
+        </a>
+
+        <a href="{% url "edit_user_account" %}" class="cardcolor rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out">
+            <div class="p-6">
+                <img src="{% static 'images/edit_accounts.png' %}" alt="Edit Icon" class="w-12 h-12 mb-4 mx-auto">
+                <h3 class="text-xl font-semibold mb-2">User Account Settings</h3>
+                <p class="text-gray-700">Click here to edit existing user accounts.</p>
+            </div>
+        </a>
+        <a href="{% url "create_batch" %}" class="cardcolor rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out">
+            <div class="p-6">
+                <img src="{% static 'images/new_batch.png' %}" alt="New Batch Icon" class="w-12 h-12 mb-4 mx-auto">
+                <h3 class="text-xl font-semibold mb-2">Create a New Batch</h3>
+                <p class="text-gray-700">Click here to create a new batch.</p>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock %}

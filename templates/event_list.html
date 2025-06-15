@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Events - MIIT Academia{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-center text-4xl font-bold mb-8">Events and News</h1>
+
+    <!-- Create New Event Card Frame -->
+    <a href="{% url 'create_event' %}" class="block mb-4">
+        <div class="bg-blue-100 border border-blue-200 rounded-lg shadow-md hover:bg-blue-200 transition duration-300 ease-in-out">
+            <div class="p-6 text-center">
+                
+                <h5 class="card-title font-semibold text-xl">Create New Event</h5>
+                <p class="card-text text-gray-700">Click here to create a new event.</p>
+            </div>
+        </div>
+    </a>
+
+    <!-- Event Cards Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        {% for event in events %}
+        <div class="bg-white rounded-lg shadow-md hover:bg-gray-100 transition duration-300 ease-in-out">
+            <div class="card-img-container">
+                <img src="{% static 'events/' %}{{ event.event_id }}.jpg"
+                     alt="{{ event.title }}"
+                     class="w-full h-48 object-cover rounded-t-lg">
+            </div>
+            <div class="p-6">
+                <h3 class="text-xl font-semibold mb-2">{{ event.title }}</h3>
+                <p class="text-gray-700">{{ event.event_description }}</p>
+                <ul class="list-unstyled mt-4">
+                    <li><strong>Start:</strong> {{ event.start_time }}</li>
+                    <li><strong>End:</strong> {{ event.end_time }}</li>
+                    <li><strong>Location:</strong> {{ event.location }}</li>
+                    <li><strong>Event Type:</strong> {{ event.event_type }}</li>
+                </ul>
+                <a href="{% url 'event_detail' event.event_id %}" class="block mt-4 text-blue-500 hover:underline">View Details</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% comment %} {% empty %}
+    <p class="text-center text-gray-700">No events available at the moment.</p>
+    {% endfor %} {% endcomment %}
+</div>
+{% endblock %}
+
+<style>
+    .card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden; /* Ensures the image covers the card properly */
+    }
+
+    .card-img-container {
+        height: 200px; /* Set a fixed height for consistent card height */
+        display: flex;
+        justify-content: center; /* Center horizontally */
+        align-items: center; /* Center vertically */
+        overflow: hidden; /* Ensure the image fits within the container */
+    }
+
+    .card-img-top {
+        width: 100%; /* Ensure the image spans the entire container */
+        height: 100%; /* Ensure the image spans the entire container */
+        object-fit: cover; /* Cover the container */
+    }
+</style>

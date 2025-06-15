@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Academic System Management - MIIT Academia{% endblock %}
+
+{% block content %}
+<div class="toggle flex border border-gray-300 py-2 fixed top-16 left-0 w-full cardcolor z-50">
+    <p class="text-md ml-4 py-2 mt-3"><a href="{% url "admin_panel" %}" class="link"> MIIT Academia - Admin Panel</a> / Academic Statistics </p>
+</div>
+<div class="container mx-auto px-8 py-8 mt-36">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <a href="{% url 'generate_transcript' %}" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6">
+                <div class="flex justify-center cardicon">
+                    <i class="fas fa-file-alt w-12 h-12 mb-6 mx-auto fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Generate transcript</h3>
+                <p class="text-gray-700">Click here to generate transcript.</p>
+            </div>
+        </a>
+
+        <a href="#" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6">
+                <div class="flex justify-center cardicon">
+                    <i class="fas fa-graduation-cap w-12 h-12 mb-6 mx-auto fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Grade</h3>
+                <p class="text-gray-700">Click here to check grade.</p>
+            </div>
+        </a>
+        <a href="#" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6">
+                <div class="flex justify-center cardicon">
+                    <i class="fas fa-check-circle w-12 h-12 mb-6 mx-auto fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Attendance</h3>
+                <p class="text-gray-700">Click here to check attendance.</p>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock %}

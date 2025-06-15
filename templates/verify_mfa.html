@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify MFA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link id="theme-stylesheet" rel="stylesheet" href="">
+</head>
+<body>
+    <div class="container mx-auto px-4 py-8 mt-5">
+        <h1 class="text-3xl font-bold mb-4 text-center">Verify Multi-factor Authentication</h1>
+        
+        <!-- Authenticator Method -->
+        <div id="authenticator-method" class="verification-method">
+            <form method="post" id="otp-form">
+                {% csrf_token %}
+                <div class="max-w-md mx-auto border max-w-sm rounded mt-8">
+                    <div class="shadow-md px-4 py-6">
+                        <div class="flex justify-center gap-2 mb-6">
+                            <input class="otp-input w-12 h-12 text-center border rounded-md shadow-sm focus:border-teal-500 focus:ring-teal-500" type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" autocomplete="one-time-code" required>
+                            <input class="otp-input w-12 h-12 text-center border rounded-md shadow-sm focus:border-teal-500 focus:ring-teal-500" type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" autocomplete="one-time-code" required>
+                            <input class="otp-input w-12 h-12 text-center border rounded-md shadow-sm focus:border-teal-500 focus:ring-teal-500" type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" autocomplete="one-time-code" required>
+                            <input class="otp-input w-12 h-12 text-center border rounded-md shadow-sm focus:border-teal-500 focus:ring-teal-500" type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" autocomplete="one-time-code" required>
+                            <input class="otp-input w-12 h-12 text-center border rounded-md shadow-sm focus:border-teal-500 focus:ring-teal-500" type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" autocomplete="one-time-code" required>
+                            <input class="otp-input w-12 h-12 text-center border rounded-md shadow-sm focus:border-teal-500 focus:ring-teal-500" type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" autocomplete="one-time-code" required>
+                        </div>
+                        <input type="hidden" name="token" id="otp-token">
+                        <div class="flex items-center justify-center">
+                            <button class="custombg font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                                Verify
+                            </button>
+                        </div>
+                        <div class="flex justify-center mt-4">
+                            <button type="button" class="text" onclick="switchToBackup()">Verify using backup code</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Backup Code Method -->
+        <div id="backup-method" class="verification-method hidden">
+            <form method="post" id="backup-form">
+                {% csrf_token %}
+                <div class="max-w-md mx-auto border max-w-sm rounded mt-8">
+                    <div class="shadow-md px-4 py-6">
+                        <label for="backup_code" class="block text-sm font-medium text-gray-700">Enter Backup Code</label>
+                        <input type="text" name="backup_code" id="backup_code" class="mt-1 block w-full border rounded-md shadow-sm focus:border-teal-500 focus:ring-teal-500 h-10" required>
+                        <div class="flex items-center justify-center mt-4">
+                            <button class="custombg font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                                Verify
+                            </button>
+                        </div>
+                        <div class="flex justify-center mt-4">
+                            <button type="button" class="text" onclick="switchToAuthenticator()">Verify using authenticator</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        {% if messages %}
+        <ul class="messages w-1/3 mx-auto mt-4"> 
+            {% for message in messages %}
+                {% if 'invalid_code' in message.tags %}
+                    <li class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-2 mb-4">
+                        <strong class="font-bold">Error!</strong>
+                        <span class="block sm:inline">{{ message }}</span>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <footer class="text-white text-base py-6 mt-52">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex-shrink-0 mb-4 md:mb-0 mx-8">
+                <a href="#">
+                    <img src="{% static 'images/miit-logo.png' %}" alt="MIIT Logo" class="h-20">
+                </a>
+            </div>
+            <div class="flex-grow text-black text-center md:text-left">
+                <p>Myanmar Institute of Information Technology is a computer university located in Mandalay, Myanmar.<br> It was set up as a National Centre of Excellence in 2015.</p>
+                <p>This application was developed internally at MIIT.</p>
+            </div>
+            <div class="flex space-x-10 mx-10 mt-4 md:mt-0">
+                <a href="http://facebook.com/miit.edu.mdy.mm"><img src="{% static 'images/facebook_icon.png' %}" alt="Facebook" class="h-8"></a>
+                <a href="https://twitter.com/MIIT_Mandalay"><img src="{% static 'images/twitter_icon.png' %}" alt="Twitter" class="h-8"></a>
+                <a href="https://www.youtube.com/@miitmandalay9212"><img src="{% static 'images/youtube_icon.png' %}" alt="Youtube" class="h-8"></a>
+                <a href="https://www.linkedin.com/school/myanmar-institute-of-information-technology-miit-/mycompany/"><img src="{% static 'images/linkedin_icon.png' %}" alt="LinkedIn" class="h-8"></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+         window.onload = function() {
+            const theme = getCookie('theme') || 'original_theme';
+            document.getElementById('theme-stylesheet').href = `/static/themes/${theme}.css`;
+        };
+
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const inputs = document.querySelectorAll('.otp-input');
+            const otpToken = document.getElementById('otp-token');
+            const otpForm = document.getElementById('otp-form');
+
+            inputs[0].focus();
+
+            inputs.forEach((input, index) => {
+                input.addEventListener('input', () => {
+                    if (input.value.length === 1 && index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                });
+
+                input.addEventListener('keydown', (event) => {
+                    if (event.key === 'Backspace' && input.value.length === 0 && index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                });
+            });
+
+            otpForm.addEventListener('submit', (event) => {
+                let otpValue = '';
+                inputs.forEach(input => {
+                    otpValue += input.value;
+                });
+                otpToken.value = otpValue;
+            });
+        });
+
+        function switchToBackup() {
+            document.getElementById('authenticator-method').classList.add('hidden');
+            document.getElementById('backup-method').classList.remove('hidden');
+        }
+
+        function switchToAuthenticator() {
+            document.getElementById('backup-method').classList.add('hidden');
+            document.getElementById('authenticator-method').classList.remove('hidden');
+        }
+    </script>
+    <style>
+        footer {
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            padding: 1rem 0; /* Adjust as needed */
+        }
+    </style>
+</body>
+</html>

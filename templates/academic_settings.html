@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Academic System Management - MIIT Academia{% endblock %}
+
+{% block content %}
+<div class="flex border border-gray-300 py-2 fixed top-16 left-0 w-full cardcolor z-50">
+    <p class="text-md ml-4 py-2 mt-3"><a href=" {% url "admin_panel" %} " class="link"> MIIT Academia - Admin Panel</a> / <a href=" {% url "academic_system_management" %} " class="link">Academic System Management</a> /  Academic Settings </p>
+</div>
+<div class="container mx-auto px-8 mt-32">
+    <h1 class="text-2xl font-bold pt-8  pb-4">Academic Year</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 py-2">
+        
+        <a href="{% url 'create_academic_year' %}" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6">
+                <div class="flex justify-center cardicon">
+                    <i class="fas fa-calendar-plus w-12 h-12 mb-6 mx-auto fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Create Academic Year</h3>
+                <p class="text-gray-700">Click here to create academic year.</p>
+            </div>
+        </a>
+        <a href="{% url 'edit_academic_year' %}" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6">
+                <div class="flex justify-center cardicon">
+                    <i class="fas fa-edit w-12 h-12 mb-6 mx-auto fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Edit Academic Year</h3>
+                <p class="text-gray-700">Click here to edit academic year.</p>
+            </div>
+        </a>
+    </div>
+
+    <h1 class="text-2xl font-bold pt-8 pb-4">Program</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 py-2">
+
+        <a href="{% url 'create_program' %}" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6">
+                <div class="flex justify-center cardicon">
+                    <i class="fas fa-light fa-graduation-cap w-12 h-12 mb-6 mx-auto fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Create Program</h3>
+                <p class="text-gray-700">Click here to create new program.</p>
+            </div>
+        </a>
+        <a href="{% url 'edit_program' %}" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6">
+                <div class="flex justify-center cardicon">
+                    <i class="fas fa-light fa-edit w-12 h-12 mb-6 mx-auto fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Edit Program</h3>
+                <p class="text-gray-700">Click here to edit program.</p>
+            </div>
+        </a>
+    </div>
+
+    <h1 class="text-2xl font-bold pt-8 pb-4">Discipline</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 py-2">
+        
+        <a href="{% url 'create_discipline' %}" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6">
+                <div class="flex justify-center cardicon">
+                    <i class="fas fa-light fa-book w-12 h-12 mb-6 mx-auto fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Create Discipline</h3>
+                <p class="text-gray-700">Click here to create discipline.</p>
+            </div>
+        </a>
+
+        <a href="{% url 'edit_discipline' %}" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6">
+                <div class="flex justify-center cardicon">
+                    <i class="fas fa-edit w-12 h-12 mb-6 mx-auto fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Edit Discipline</h3>
+                <p class="text-gray-700">Click here to edit discipline.</p>
+            </div>
+        </a>
+        
+    </div>
+
+    <h1 class="text-2xl font-bold pt-8 pb-4">Semester</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 py-2">
+        
+        <!-- Create Semester Card -->
+        <a href="{% url "create_semester" %}" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6">
+                <div class="flex justify-center cardicon">
+                    <i class="fas fa-light fa-calendar-plus w-12 h-12 mb-6 mx-auto fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Create Semester</h3>
+                <p class="text-gray-700">Click here to create a semester.</p>
+            </div>
+        </a>
+
+        <a href="#" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6">
+                <div class="flex justify-center cardicon">
+                    <i class="fas fa-light fa-play-circle w-12 h-12 mb-6 mx-auto fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Start Semester</h3>
+                <p class="text-gray-700">Click here to start or end a semester.</p>
+            </div>
+        </a>
+        
+        <!-- Edit Semester Card -->
+        <a href="{% url "edit_semester" %}" class="cardcolor rounded-lg shadow-md hover:shadow-lg">
+            <div class="p-6">
+                <div class="flex justify-center cardicon">
+                    <i class="fas fa-light fa-edit w-12 h-12 mb-6 mx-auto fa-2x p-3 rounded-full"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Edit Semester</h3>
+                <p class="text-gray-700">Click here to edit semester.</p>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock %}

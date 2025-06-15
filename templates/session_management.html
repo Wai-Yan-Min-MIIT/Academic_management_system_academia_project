@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Connected Devices{% endblock %}
+{% block content %}
+    <div class="container mx-auto px-4 py-8 mb-16">
+        <h1 class="text-center text-3xl font-bold mb-4">Active Sessions</h1>
+        <table class="md:w-5/6 lg:w-2/3 mx-auto">
+            <thead class="cardcolor4">
+                <tr>
+                    <th class="px-4 py-2">Device Name</th>
+                    <th class="px-4 py-2">IP Address</th>
+                    <th class="px-4 py-2">Browser</th>
+                    <th class="px-4 py-2">Operating System</th>
+                    <th class="px-4 py-2">Last Activity</th>
+                    <th class="px-4 py-2">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for device in devices %}
+                <tr>
+                    <td class="border px-4 py-2">{{ device.device_name }}</td>
+                    <td class="border px-4 py-2">{{ device.ip_address }}</td>
+                    <td class="border px-4 py-2">
+                        {% if device.browser|lower == 'chrome' %}
+                        <i class="fa-brands fa-chrome"></i>
+                        {% elif device.browser|lower == 'edge' %}
+                        <i class="fa-brands fa-edge"></i>
+                        {% elif device.browser|lower == 'firefox' %}
+                        <i class="fa-brands fa-firefox-browser"></i> 
+                        {% elif device.browser|lower == 'safari' %}
+                        <i class="fa-brands fa-safari"></i>
+                        {% elif device.browser|lower == 'opera' %}
+                        <i class="fa-brands fa-opera"></i>
+                        {% else %}
+                        <i class="fa-solid fa-earth-americas"></i>
+                        {% endif %}
+                        {{ device.browser }}
+                    </td>
+                    <td class="border px-4 py-2">
+                        {% if device.os|lower == 'windows' %}
+                        <i class="fa-brands fa-windows"></i>
+                        {% elif 'mac' in device.os|lower %}
+                        <i class="fa-brands fa-apple"></i>
+                        {% elif device.os|lower == 'linux' %}
+                        <i class="fa-brands fa-linux"></i> 
+                        {% elif device.os|lower == 'ubuntu' %}
+                        <i class="fa-brands fa-ubuntu"></i>
+                        {% else %}
+                        <i class="fa-solid fa-earth-americas"></i>
+                        {% endif %}
+                        {{ device.os }}
+                    </td>
+                    <td class="border px-4 py-2">{{ device.last_activity }}</td>
+                    <td class="border px-4 py-2">
+                        <a href="#" onclick="confirmLogout('{% url 'logout_device' device.session_key %}')" class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-light fa-sign-out-alt"></i> Logout
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white rounded-lg p-8">
+            <h2 class="text-xl mb-4 text-center font-semibold text-red-500">Confirm Logout</h2>
+            <p class="mb-4">Are you sure you want to logout this device?</p>
+            <div class="flex justify-end">
+                <button onclick="closeModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2">Cancel</button>
+                <a id="confirmLogoutButton" href="#" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Logout</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function confirmLogout(url) {
+            document.getElementById('confirmLogoutButton').href = url;
+            document.getElementById('confirmationModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('confirmationModal').classList.add('hidden');
+        }
+    </script>
+{% endblock %}
