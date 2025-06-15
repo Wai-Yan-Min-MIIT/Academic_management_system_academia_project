@@ -1,0 +1,143 @@
+/* base */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #422d3d;
+    z-index: 9999;
+    padding: 0.5rem 0; /* Adjust as needed */
+    height: relative; /* Adjust the height */
+}
+
+
+/* student-base/faculty/student_affairs */
+.custom-highlight,.custom-highlight:hover {
+    background-color: #493636 !important;
+    color: white;
+}
+
+/* text */
+.text{
+    color: black;
+}
+.navfontcolor{
+    color: #fcd34d;
+}
+.navfontcolor:hover {
+    color: #ef4444;
+}
+
+/* border */
+.bordercolor{
+    border-color: #e4e4e7;
+}
+
+/* button */
+.custombg{
+    background-color: #412F2F;
+    color: #ffffff;
+}
+.custombg:hover{
+    background-color: #4f4040;
+}
+
+
+/* card */
+.cardcolor{
+    background-color: white;
+}
+.cardcolor1{
+    background-color:#f3f4f6;
+}
+.cardcolor2{
+    background-color: #efeff1;
+}
+.cardcolor3{
+    background-color: #e4e4e7;
+}
+.cardcolor4{
+    background-color: #412F2F;
+    color: white;
+}
+.cardicon{
+    color : #412F2F ;
+}
+
+/* link */
+.link:hover{
+    color: #777676;
+}
+
+/* choose_role */
+.role-label {
+    border: 1px solid #d1d5db;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.role-label:hover {
+    background-color: #f3f4f6;
+}
+.role-label.selected {
+    background-color: #412F2F;
+    color: white;
+}
+
+/* footer */
+footer{
+    background-color: #E5E8EC;
+}
+
+/* dropdown */
+.dropdown-menu a:hover,
+.dropdown-menu button:hover {
+    background-color: #f1f1f1;
+    color: red;
+}
+.dropdown-menu hr {
+    margin: 4px 0;
+    border: none;
+    border-top: 1px solid #e0e0e0;
+}
+.dropdownbg{
+    background-color: #ffffff;
+}
+
+/* step */
+.step-active {
+    background-color: #412F2F;
+    color: white;
+}
+.step-completed {
+    background-color: #412F2F;
+    color: white;
+}
+
+/* toggle */
+.toggle-checkbox:checked {
+    right: 0;
+    border-color: #412F2F;
+}
+.toggle-checkbox:checked + .toggle-label {
+    background-color: #412F2F;
+}
+input:checked + .toggle-bar {
+    background-color: #412F2F;
+}
+
+/* setting sidebar */
+.active {
+    border-left: #412F2F 3px solid;
+    background-color: #e4e4e7;
+}
+
+/* calendar */
+.fc .fc-prev-button, .fc .fc-next-button, .fc .fc-today-button {
+    background-color: #412F2F; 
+    color: #ffffff;
+}  
+
+
+
+ 

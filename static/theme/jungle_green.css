@@ -1,0 +1,127 @@
+/* base */
+header{
+    background-color: #006e85;
+}
+
+/* student-base/faculty/student_affairs */
+.custom-highlight,.custom-highlight:hover {
+    background-color: #006e85 !important;
+    color: white;
+}
+
+/* text */
+.text{
+    color: black;
+}
+.navfontcolor{
+    color: #fffdf0;
+}
+.navfontcolor:hover {
+    color: #00c69f;
+}
+ 
+/* border */
+.bordercolor{
+    border-color: #e4e4e7;
+}
+
+/* button */
+.custombg{
+    background-color: #00c69f;
+    color: #ffffff;
+}
+.custombg:hover{
+    background-color: #3df385;
+}
+
+
+/* card */
+.cardcolor{
+    background-color: white;
+}
+.cardcolor1{
+    background-color:#f3f4f6;
+}
+.cardcolor2{
+    background-color: #efeff1;
+}
+.cardcolor3{
+    background-color: #e4e4e7;
+}
+.cardicon{
+    color : #006e85 ;
+}
+
+/* link */
+.link:hover{
+    color: #777676;
+}
+
+/* choose_role */
+.role-label {
+    border: 1px solid #d1d5db;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.role-label:hover {
+    background-color: #f3f4f6;
+}
+.role-label.selected {
+    background-color: #006e85;
+    color: white;
+}
+
+/* footer */
+footer{
+    background-color: #E5E8EC;
+}
+
+/* dropdown */
+.dropdown-menu a:hover,
+.dropdown-menu button:hover {
+    background-color: #f1f1f1;
+    color: #006e85;
+}
+.dropdown-menu hr {
+    margin: 4px 0;
+    border: none;
+    border-top: 1px solid #e0e0e0;
+}
+.dropdownbg{
+    background-color: #ffffff;
+}
+
+/* step */
+.step-active {
+    background-color: #006e85;
+    color: white;
+}
+.step-completed {
+    background-color: #006e85;
+    color: white;
+}
+
+/* toggle */
+.toggle-checkbox:checked {
+    right: 0;
+    border-color: #00c69f;
+}
+.toggle-checkbox:checked + .toggle-label {
+    background-color: #00c69f;
+}
+input:checked + .toggle-bar {
+    background-color: #00c69f;
+}
+
+/* setting sidebar */
+.active {
+    border-left: #00c69f 3px solid;
+    background-color: #e4e4e7;
+}
+
+/* calendar */
+.fc .fc-prev-button, .fc .fc-next-button, .fc .fc-today-button {
+    background-color: #006e85; 
+    color: #ffffff;
+}  

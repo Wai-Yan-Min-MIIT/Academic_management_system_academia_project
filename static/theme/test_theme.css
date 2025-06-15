@@ -1,0 +1,119 @@
+/* base */
+header{
+    background-color: #2732a7;
+}
+
+/* student-base/faculty/student_affairs */
+.custom-highlight,.custom-highlight:hover {
+    background-color: #2732a7 !important;
+    color: white;
+}
+
+/* text */
+.text{
+    color: black;
+}
+
+/* border */
+.bordercolor{
+    border-color: #e4e4e7;
+}
+
+/* button */
+.custombg{
+    background-color: #2732a7;
+    color: #ffffff;
+}
+.custombg:hover{
+    background-color: #3944bd;
+}
+
+
+/* card */
+.cardcolor{
+    background-color: white;
+}
+.cardcolor1{
+    background-color:#f3f4f6;
+}
+.cardcolor2{
+    background-color: #efeff1;
+}
+.cardcolor3{
+    background-color: #e4e4e7;
+}
+
+/* link */
+.link:hover{
+    color: #777676;
+}
+
+/* choose_role */
+.role-label {
+    border: 1px solid #d1d5db;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.role-label:hover {
+    background-color: #f3f4f6;
+}
+.role-label.selected {
+    background-color: #2732a7;
+    color: white;
+}
+
+/* footer */
+footer{
+    background-color: #E5E8EC;
+}
+
+/* dropdown */
+.dropdown-menu a:hover,
+.dropdown-menu button:hover {
+    background-color: #f1f1f1;
+    color: #2732a7;
+}
+.dropdown-menu hr {
+    margin: 4px 0;
+    border: none;
+    border-top: 1px solid #e0e0e0;
+}
+.dropdownbg{
+    background-color: #ffffff;
+}
+
+/* step */
+.step-active {
+    background-color: #2732a7;
+    color: white;
+}
+.step-completed {
+    background-color: #2732a7;
+    color: white;
+}
+
+/* toggle */
+.toggle-checkbox:checked {
+    right: 0;
+    border-color: #2732a7;
+}
+.toggle-checkbox:checked + .toggle-label {
+    background-color: #2732a7;
+}
+input:checked + .toggle-bar {
+    background-color: #2732a7;
+}
+
+/* setting sidebar */
+.active {
+    border-left: #2732a7 3px solid;
+    background-color: #e4e4e7;
+}
+
+
+/* calendar */
+.fc .fc-prev-button, .fc .fc-next-button, .fc .fc-today-button {
+    background-color: #2732a7; 
+    color: #ffffff;
+}
