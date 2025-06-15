@@ -1,0 +1,115 @@
+@login_required
+@faculty_role_required
+def upload_attendance(request, course_code):
+    faculty = FacultyStaff.objects.get(UserID=request.user.UserID)
+    semester = Semester.objects.get(SemesterStatus='Current')
+    course = Course.objects.get(CourseCode=course_code)
+
+    attendance = Attendance.objects.filter(
+        FacultyStaffID=faculty,
+        SemesterID=semester,
+        CourseCode=course
+    ).order_by('-EndDate').first()  # Get the latest attendance record
+
+    start_date = attendance.StartDate if attendance else None
+    end_date = attendance.EndDate if attendance else None
+    end_date_temp = end_date
+
+    if request.method == 'POST':
+        if 'attendance_file' in request.FILES:
+            attendance_file = request.FILES['attendance_file']
+            if attendance_file.name.endswith('.xlsx'):
+                # Process the uploaded file
+                try:
+                    workbook = load_workbook(attendance_file)
+                    sheet = workbook['Attendance_Input']
+
+                    # Extract data
+                    start_date = sheet.cell(row=4, column=5).value.split('All')[0].strip()
+                    end_date = sheet.cell(row=4, column=sheet.max_column - 6).value.split('All')[0].strip()
+
+                    # Ensure the input format matches exactly
+                    try:
+                        start_date_obj = datetime.datetime.strptime(start_date, "%d %b %Y %I.%M%p").date()
+                        end_date_obj = datetime.datetime.strptime(end_date, "%d %b %Y %I.%M%p").date()
+                    except ValueError as e:
+                        messages.error(request, f"Error processing date: {e}")
+                        return redirect('upload_attendance', course_code)
+
+                    # Get Attendance ID or create a new one
+                    with transaction.atomic():
+                        attendance, created = Attendance.objects.get_or_create(
+                            FacultyStaffID=faculty,
+                            SemesterID=semester,
+                            CourseCode=course,
+                            defaults={'StartDate': start_date_obj, 'EndDate': end_date_obj}
+                        )
+
+
+                        if attendance.EndDate == end_date_obj and attendance.StartDate == start_date_obj:
+                            messages.success(request, f'Attendance already uploaded till this date : {end_date_temp if end_date_temp else ""}.')
+                            return redirect('upload_attendance', course_code)
+                        
+                        if attendance.EndDate > start_date_obj:
+                            messages.success(request, f'Attendance date might be overlapping. Please upload after this date : {end_date_temp if end_date_temp else ""}.')
+                            return redirect('upload_attendance', course_code)
+
+                        # Update start and end dates if needed
+                        if not created:
+                            attendance.StartDate = min(attendance.StartDate, start_date_obj)
+                            attendance.EndDate = max(attendance.EndDate, end_date_obj)
+                            attendance.save()
+
+                        for row in sheet.iter_rows(min_row=5, values_only=True):
+                            student_id = row[1]
+                            total_sections = row[-3]
+                            present_sections = row[-6]
+
+                            user_id = MIITUsers.objects.filter(username=student_id).values_list('UserID', flat=True).first()
+                            student = Student.objects.get(UserID=user_id)
+
+                            student_attendance, sa_created = StudentAttendance.objects.get_or_create(
+                                AttendanceID=attendance,
+                                StudentID=student,
+                                BatchID=student.BatchID,
+                                defaults={
+                                    'TotalSections': total_sections,
+                                    'PresentSections': present_sections,
+                                    'Percentage': (present_sections / total_sections) * 100
+                                }
+                            )
+
+                            if not sa_created:
+                                student_attendance.TotalSections += total_sections
+                                student_attendance.PresentSections += present_sections
+                                student_attendance.Percentage = (student_attendance.PresentSections / student_attendance.TotalSections) * 100
+                                student_attendance.save()
+
+                    messages.success(request, 'Attendance file processed and uploaded successfully.')
+                except Exception as e:
+                    messages.error(request, f'Error processing file: {e}')
+                return redirect('upload_attendance', course_code)
+            else:
+                messages.error(request, 'Please upload a valid .xlsx file.')
+        else:
+            messages.error(request, 'No file uploaded. Please upload an attendance file.')
+
+    context = {
+        'course_id': course_code,
+        'start_date': start_date,
+        'end_date': end_date,
+    }
+    return render(request, 'upload_attendance.html', context)
+
+
+
+
+def faculty_role_required(view_func):
+    def _wrapped_view(request, *args, **kwargs):
+        valid_roles = MIITUserRole.objects.filter(UserID=request.user.UserID).values_list('RoleID', flat=True)
+        selected_role = request.session.get('selected_role')
+        if selected_role in valid_roles and selected_role in ['R06']:
+            return view_func(request, *args, **kwargs)
+        else:
+            return HttpResponseForbidden("You don't have permission to access this page.")
+    return _wrapped_view

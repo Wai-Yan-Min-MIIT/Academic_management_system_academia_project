@@ -1,0 +1,223 @@
+@login_required
+@student_affairs_super_admin_required
+def generate_transcript(request):
+    email = None
+    selected_user = None
+    if request.method == 'POST':
+        email = request.POST.get('email')
+
+        try:
+            user_id = MIITUsers.objects.filter(username=email).values_list('UserID', flat=True).first()
+            if not user_id:
+                raise MIITUsers.DoesNotExist
+            
+            selected_user = Student.objects.filter(UserID=user_id).values().first()
+            
+            if not selected_user:
+                raise Student.DoesNotExist
+
+            if 'generate_transcript' in request.POST:
+                student_id = Student.objects.filter(UserID=user_id).values_list('StudentID', flat=True).first()
+                student = Student.objects.get(StudentID=student_id)
+                student_name = student.StudentName
+                roll_number = student.RollNumber
+                program = Program.objects.filter(ProgramID=student.ProgramID).values_list('ProgramFullName', flat=True).first()
+                discipline = Discipline.objects.filter(DisciplineID=student.DisciplineID).values_list('DisciplineFullName', flat=True).first()
+                
+                # Fetch semesters and group by academic year
+                semesters = SemesterGrading.objects.filter(StudentID=student_id, Deleted=0).values('SemesterGradingID', 'SemesterID', 'SemesterPeriodNumber')
+                semesters = sorted(semesters, key=lambda x: int(x['SemesterPeriodNumber'][1:]))  # Sort by semester number
+                
+                academic_years = {}
+                for sem in semesters:
+                    semester_id = sem['SemesterID']
+                    academic_year_id = Semester.objects.get(SemesterID=semester_id).AY_ID
+                    if academic_year_id not in academic_years:
+                        academic_years[academic_year_id] = {
+                            'academic_year_label': f"Academic Year {academic_year_id}",
+                            'semesters': []
+                        }
+                    sem['course_info'] = CourseGrading.objects.filter(SemesterGradingID=sem['SemesterGradingID']).values('CourseCode', 'GradePointID')
+                    for course in sem['course_info']:
+                        course_info = Course.objects.get(CourseCode=course['CourseCode'])
+                        grade = GradePoint.objects.get(GradePointID=course['GradePointID']).Grade
+                        course['CourseName'] = course_info.CourseName
+                        course['CourseCredits'] = course_info.CourseCredits
+                        course['Grade'] = grade
+                    
+                    grade_sheet = GradeSheetData.objects.filter(StudentID=student_id, SemesterID=semester_id).values_list('SemesterCredits', 'AccumulatedCredits', 'SGPA', 'CGPA').first()
+                    sem['grade_sheet'] = grade_sheet
+                    academic_years[academic_year_id]['semesters'].append(sem)
+
+                grade_points_data = GradePoint.objects.filter(~Q(Grade='SNO') & ~Q(Grade='DNR')).values('Grade', 'GradePointValue')
+
+                # Create the HttpResponse object with the appropriate PDF headers.
+                response = HttpResponse(content_type='application/pdf')
+                response['Content-Disposition'] = f'attachment; filename="transcript_{student_name}.pdf"'
+                
+                buffer = BytesIO()
+                p = canvas.Canvas(buffer, pagesize=A4)
+                width, height = A4
+                p.setPageSize((height, width))  # Landscape mode
+                
+                def draw_header(page_num):
+                    logo_path = os.path.join(settings.STATICFILES_DIRS[0], 'images', 'miit-logo.png')
+                    p.drawImage(logo_path, 50, width - 80, width=60, height=60, mask='auto')
+                    p.setFont("Helvetica-Bold", 12)
+                    p.drawString(width - 60, width - 40, "Myanmar Institute of Information Technology")
+                    p.drawString(width - 60 , width - 57, "Mandalay, Myanmar")
+                    p.line(40, width - 90, height - 40, width - 90)
+                    p.setFont("Helvetica-Bold", 12)
+                    p.drawString((height / 2) - 50, width - 110, "Academic Transcript")
+                    p.setFont("Helvetica-Bold", 10)
+                    p.drawString(50, width - 120, "Name: ")
+                    p.setFont("Helvetica", 10)
+                    p.drawString(130, width - 120, f"{student_name}")
+                    p.setFont("Helvetica-Bold", 10)
+                    p.drawString(50, width - 135, f"Roll Number:")
+                    p.setFont("Helvetica", 10)
+                    p.drawString(130, width - 135, f"{roll_number}")
+
+                    p.setFont("Helvetica-Bold", 10)
+                    p.drawString(width - 50, width - 120, f"Program:")
+                    p.setFont("Helvetica", 10)
+                    p.drawString(width + 20, width - 120, f"{program}")
+                    p.setFont("Helvetica-Bold", 10)
+                    p.drawString(width - 50, width - 135, f"Discipline:")
+                    p.setFont("Helvetica", 10)
+                    p.drawString(width + 20, width - 135, f"{discipline}")
+                
+                def draw_footer(page_num):
+                    p.line(40, width - 520, height - 40, width - 520)
+                    p.setFont("Helvetica-Bold", 10)
+                    p.drawString(40, 50 , "Copyright MIIT")
+                    p.drawRightString(height - 40, 50 , f"Page {page_num}")
+                    p.setFont("Helvetica", 6)
+                    # Prepare data for column layout
+                    grades = [item['Grade'] for item in grade_points_data]
+                    grade_points = [item['GradePointValue'] for item in grade_points_data]
+                    data = [["Grade"] + grades, ["Grade Point"] + grade_points]
+
+                    col_widths = [60] + [30] * (len(grades) - 1)
+                    table = Table(data, colWidths=col_widths)
+                    table.setStyle(TableStyle([
+                        ('BACKGROUND', (0, 0), (0, -1), colors.white),
+                        ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+                        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                        ('FONT', (0, 0), (-1, -1), 'Helvetica', 6),
+                        ('FONT', (0, 0), (0, -1), 'Helvetica-Bold', 6),
+                        ('BOTTOMPADDING', (0, 0), (-1, 0), 6),  # Adjusted bottom padding
+                        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                    ]))
+                    table.wrapOn(p, height - 80, width - 100)
+                    table.drawOn(p, 200, 30)
+
+
+                def draw_table_for_semesters(semester, x, y):
+                    col_widths = [50, 100, 30, 30]  # Manually set column widths
+
+                    p.setFont("Helvetica", 10)
+                    p.drawString(x, y+20, f"Semester {semester['SemesterPeriodNumber']}")
+                    y -= 10
+
+                    # Create grade table
+                    grade_data = [["Course Code", "Course Name", "Credits", "Grade"]]
+                    for course in semester['course_info']:
+                        grade_data.append([course['CourseCode'], course['CourseName'], course['CourseCredits'], course['Grade']])
+
+                    table = Table(grade_data, colWidths=col_widths)
+                    table.setStyle(TableStyle([
+                        ('BACKGROUND', (0, 0), (-1, 0), colors.white),
+                        ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+                        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                        ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold', 7),
+                        ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
+                        ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+                        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                        ('FONT', (0, 1), (-1, -1), 'Helvetica', 6),
+                    ]))
+                    table.wrapOn(p, height - 80, width - 20)
+                    table.drawOn(p, x, y - 120)
+                    y -= 180
+
+                    # Semester Credits Table
+                    sem_credits_data = [
+                        ["Semester Credits", semester['grade_sheet'][0]],
+                        ["Accumulated Credits", semester['grade_sheet'][1]],
+                    ]
+                    sem_credits_col_widths = [70, 30]  # Manually set column widths
+                    sem_credits_table = Table(sem_credits_data, colWidths=sem_credits_col_widths)
+                    sem_credits_table.setStyle(TableStyle([
+                        ('BACKGROUND', (0, 0), (0, -1), colors.white),
+                        ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+                        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                        ('FONT', (0, 0), (-1, -1), 'Helvetica', 6),
+                        ('FONT', (0, 0), (0, -1), 'Helvetica-Bold', 6),
+                        ('BOTTOMPADDING', (0, 0), (-1, 0), 6),  # Adjusted bottom padding
+                        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                    ]))
+                    sem_credits_table.wrapOn(p, height - 80, width - 200)
+                    sem_credits_table.drawOn(p, x, y - (len(sem_credits_data) * 15))
+
+                    # SGPA/CGPA Table
+                    sgpa_cgpa_data = [
+                        ["SGPA", semester['grade_sheet'][2]],
+                        ["CGPA", semester['grade_sheet'][3]],
+                    ]
+                    sgpa_cgpa_col_widths = [40, 30]  # Manually set column widths
+                    sgpa_cgpa_table = Table(sgpa_cgpa_data, colWidths=sgpa_cgpa_col_widths)
+                    sgpa_cgpa_table.setStyle(TableStyle([
+                        ('BACKGROUND', (0, 0), (0, -1), colors.white),
+                        ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+                        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                        ('FONT', (0, 0), (-1, -1), 'Helvetica', 6),
+                        ('FONT', (0, 0), (0, -1), 'Helvetica-Bold', 6),
+                        ('BOTTOMPADDING', (0, 0), (-1, 0), 6),  # Adjusted bottom padding
+                        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                    ]))
+                    sgpa_cgpa_table.wrapOn(p, height - 80, width - 200)
+                    sgpa_cgpa_table.drawOn(p, x + 140, y - (len(sgpa_cgpa_data) * 15))
+                    y -= len(sgpa_cgpa_data) * 20 + 20
+
+                    
+
+                page_num = 1
+                
+                for academic_year_id, academic_year_data in academic_years.items():
+                    draw_header(page_num)
+                    draw_footer(page_num)
+                    y = width - 160
+
+                    p.setFont("Helvetica-Bold", 10)
+                    p.drawString(50, y, academic_year_data['academic_year_label'])
+                    y -= 40
+                    x=40
+                    # Draw the tables for the academic year
+                    for semester in academic_year_data['semesters']:
+                        draw_table_for_semesters(semester, x, y)
+                        x += 280
+                    page_num += 1
+                    p.showPage()
+                    y -= 40  # Space between different academic years
+
+                p.save()
+
+                # Get the value of the BytesIO buffer and write it to the response.
+                pdf = buffer.getvalue()
+                buffer.close()
+                response.write(pdf)
+                return response
+        
+        except MIITUsers.DoesNotExist:
+            print("hello")
+            messages.error(request, 'No user found with this email.', extra_tags='user_not_found')
+
+        except Student.DoesNotExist:
+            messages.error(request, 'Student not found.', extra_tags='student_not_found') 
+
+    context = {
+        'email':email,
+        'selected_user':selected_user
+    }
+
+    return render(request, 'generate_transcript_sa.html', context)
